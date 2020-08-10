@@ -41,15 +41,16 @@ function updateReportWithNewAction(reportID, reportAction) {
             return reportHistoryItem;
         }))
         .then((reportHistory) => {
-            // If there was no existing history item, add it to the report history and mark the report for having unread
-            // items
+            // If there was no existing history item, add it to the report history and
+            // mark the report for having unread items
             if (!foundExistingReportHistoryItem) {
                 reportHistory.push(reportAction);
                 Store.merge(`${STOREKEYS.REPORT}_${reportID}`, {hasUnread: true});
             }
             return reportHistory;
         })
-        .then(reportHistory => Store.set(`${STOREKEYS.REPORT}_${reportID}_history`, reportHistory.sort(sortReportActions)));
+        .then(reportHistory => Store.set(`${STOREKEYS.REPORT}_${reportID}_history`,
+            reportHistory.sort(sortReportActions)));
 }
 
 /**
@@ -131,6 +132,7 @@ function fetchAll() {
                 return data;
             })
             .then(data => Store.set(STOREKEYS.REPORTS, _.values(data.reports)))
+            // eslint-disable-next-line no-console
             .catch((error) => { console.log('Error fetching report actions', error); });
     }
 
@@ -146,6 +148,7 @@ function fetchAll() {
             return data;
         })
         .then(data => Store.set(STOREKEYS.REPORTS, _.values(data.reportListBeta)))
+        // eslint-disable-next-line no-console
         .catch((error) => { console.log('Error fetching report actions', error); });
 }
 
