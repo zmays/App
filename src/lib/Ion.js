@@ -65,8 +65,6 @@ function disconnect(connectionID) {
  * @param {mixed} data
  */
 function keyChanged(key, data) {
-    console.debug('[STORE] key changed', key, data);
-
     // Find components that were added with connect() and trigger their setState() method with the new data
     _.each(callbackToStateMapping, (mappedComponent) => {
         if (mappedComponent && mappedComponent.regex.test(key)) {
@@ -91,6 +89,49 @@ function keyChanged(key, data) {
                 });
             }
         }
+    });
+}
+
+/**
+ * When multiple keys change, we need to find all the components that need updated, and then call setState() only
+ * once for each component
+ *
+ * @param {object} keyValuePairs
+ */
+function multiKeysChanged(keyValuePairs) {
+    const mappedComponentsMatchingKeys = _.reduce(keyValuePairs, (memo, val, key) => {
+        const finalData = {...memo};
+
+        // Find a mapping that connected to this key
+        const mappingMatchingKey = _.find(
+            callbackToStateMapping,
+            mappedComponent => mappedComponent && mappedComponent.regex.test(key)
+        );
+
+        // If there was a mapping found, add it to the finalData and add val to an array of changed data
+        if (mappingMatchingKey) {
+            if (!finalData[mappingMatchingKey.key]) {
+                finalData[mappingMatchingKey.key] = {
+                    mapping: null,
+                    data: [],
+                };
+            }
+
+            // It's OK to overwrite any previous mappings because it should all be the same component and we only need
+            // one component to update for each key
+            finalData[mappingMatchingKey.key].mapping = mappingMatchingKey;
+            finalData[mappingMatchingKey.key].data.push(val);
+        }
+
+        return finalData;
+    }, {});
+
+    // For each mapping that matched the keys, call their setState() method with the new data
+    _.each(mappedComponentsMatchingKeys, (mappedComponentMatchingKeys) => {
+        const {mapping, data} = mappedComponentMatchingKeys;
+        mapping.reactComponent.setState({
+            [mapping.statePropertyName]: data,
+        });
     });
 }
 
@@ -166,9 +207,7 @@ function multiSet(data) {
         [key, JSON.stringify(val)],
     ]), []);
     return AsyncStorage.multiSet(keyValuePairs)
-        .then(() => {
-            _.each(data, (val, key) => keyChanged(key, val));
-        });
+        .then(() => multiKeysChanged(data));
 }
 
 /**
