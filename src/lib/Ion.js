@@ -59,6 +59,42 @@ function disconnect(connectionID) {
 }
 
 /**
+ * Applys a data value to a mapping
+ *
+ * @param {object} mapping that was originally passed to Ion.connect()
+ * @param {mixed} val
+ */
+function applyValueToMapping(mapping, val, replaceEntireCollection) {
+    const newValue = mapping.path
+        ? lodashGet(val, mapping.path, mapping.defaultValue)
+        : val || mapping.defaultValue || null;
+
+    // Set the state of the react component with either the pathed data, or the data
+    if (mapping.addAsCollection) {
+        // Add the data to an array of existing items
+        mapping.reactComponent.setState((prevState) => {
+            let newState;
+            if (!replaceEntireCollection) {
+                const collection = prevState[mapping.statePropertyName] || {};
+                collection[newValue[mapping.collectionID]] = newValue;
+                newState = {
+                    [mapping.statePropertyName]: collection,
+                };
+            } else {
+                newState = {
+                    [mapping.statePropertyName]: newValue,
+                };
+            }
+            return newState;
+        });
+    } else {
+        mapping.reactComponent.setState({
+            [mapping.statePropertyName]: newValue,
+        });
+    }
+}
+
+/**
  * When a key change happens, search for any callbacks matching the regex pattern and trigger those callbacks
  *
  * @param {string} key
@@ -68,26 +104,7 @@ function keyChanged(key, data) {
     // Find components that were added with connect() and trigger their setState() method with the new data
     _.each(callbackToStateMapping, (mappedComponent) => {
         if (mappedComponent && mappedComponent.regex.test(key)) {
-            const newValue = mappedComponent.path
-                ? lodashGet(data, mappedComponent.path, mappedComponent.defaultValue)
-                : data || mappedComponent.defaultValue || null;
-
-            // Set the state of the react component with either the pathed data, or the data
-            if (mappedComponent.addAsCollection) {
-                // Add the data to an array of existing items
-                mappedComponent.reactComponent.setState((prevState) => {
-                    const collection = prevState[mappedComponent.statePropertyName] || {};
-                    collection[newValue[mappedComponent.collectionID]] = newValue;
-                    const newState = {
-                        [mappedComponent.statePropertyName]: collection,
-                    };
-                    return newState;
-                });
-            } else {
-                mappedComponent.reactComponent.setState({
-                    [mappedComponent.statePropertyName]: newValue,
-                });
-            }
+            applyValueToMapping(mappedComponent, data);
         }
     });
 }
@@ -120,18 +137,20 @@ function multiKeysChanged(keyValuePairs) {
             // It's OK to overwrite any previous mappings because it should all be the same component and we only need
             // one component to update for each key
             finalData[mappingMatchingKey.key].mapping = mappingMatchingKey;
-            finalData[mappingMatchingKey.key].data.push(val);
+            if (mappingMatchingKey.addAsCollection) {
+                finalData[mappingMatchingKey.key].data.push(val);
+            } else {
+                finalData[mappingMatchingKey.key].data = val;
+            }
         }
 
         return finalData;
     }, {});
 
-    // For each mapping that matched the keys, call their setState() method with the new data
+    // For each mapping that matched the keys, apply the mapping to the data
     _.each(mappedComponentsMatchingKeys, (mappedComponentMatchingKeys) => {
         const {mapping, data} = mappedComponentMatchingKeys;
-        mapping.reactComponent.setState({
-            [mapping.statePropertyName]: data,
-        });
+        applyValueToMapping(mapping, data, true);
     });
 }
 
@@ -188,6 +207,13 @@ function multiGet(keys) {
             [keyValuePair[0]]: JSON.parse(keyValuePair[1]),
         }), {}))
         .catch(err => console.error(`Unable to get item from persistent storage. Error: ${err}`, keys));
+}
+
+function multiGetWithRegex(keyPattern) {
+    const keyPatternRegex = new RegExp(keyPattern);
+    AsyncStorage.getAllKeys()
+        .then(keys => _.filter(keys, key => keyPatternRegex.test(key)))
+        .then(multiGet);
 }
 
 /**
