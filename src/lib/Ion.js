@@ -196,7 +196,7 @@ function get(key, extraPath, defaultValue) {
  * @param {string[]} keys
  * @returns {Promise}
  */
-function multiGet(keys) {
+function multiGet(keys, extraPath, defaultValue) {
     // AsyncStorage returns the data in an array format like:
     // [ ['@MyApp_user', 'myUserValue'], ['@MyApp_key', 'myKeyValue'] ]
     // This method will transform the data into a better JSON format like:
@@ -206,14 +206,20 @@ function multiGet(keys) {
             ...finalData,
             [keyValuePair[0]]: JSON.parse(keyValuePair[1]),
         }), {}))
+        .then((val) => {
+            if (extraPath) {
+                return lodashGet(val, extraPath, defaultValue);
+            }
+            return val;
+        })
         .catch(err => console.error(`Unable to get item from persistent storage. Error: ${err}`, keys));
 }
 
-function multiGetWithRegex(keyPattern) {
+function multiGetWithRegex(keyPattern, extraPath, defaultValue) {
     const keyPatternRegex = new RegExp(keyPattern);
-    AsyncStorage.getAllKeys()
+    return AsyncStorage.getAllKeys()
         .then(keys => _.filter(keys, key => keyPatternRegex.test(key)))
-        .then(multiGet);
+        .then(keys => multiGet(keys, extraPath, defaultValue));
 }
 
 /**
@@ -267,6 +273,7 @@ const Ion = {
     multiSet,
     get,
     multiGet,
+    multiGetWithRegex,
     merge,
     clear,
     init

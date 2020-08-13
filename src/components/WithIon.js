@@ -123,7 +123,7 @@ export default function (mapIonToState) {
                     }
 
                     // Get the data from Ion and put it into the state of our component right away
-                    Ion.get(prefillKey, mapping.path, mapping.defaultValue)
+                    Ion.multiGetWithRegex(prefillKey, mapping.path, mapping.defaultValue)
                         .then(data => reactComponent.setState({[statePropertyName]: data}));
                 }
 

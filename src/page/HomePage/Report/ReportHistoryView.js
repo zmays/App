@@ -22,6 +22,7 @@ class ReportHistoryView extends React.Component {
 
         this.recordlastReadActionID = _.debounce(this.recordlastReadActionID.bind(this), 1000, true);
         this.scrollToBottomWhenListSizeChanges = this.scrollToBottomWhenListSizeChanges.bind(this);
+        this.sortReportHistory = this.sortReportHistory.bind(this);
     }
 
     /**
@@ -101,6 +102,10 @@ class ReportHistoryView extends React.Component {
         this.recordMaxAction();
     }
 
+    sortReportHistory(a, b) {
+        return a.sequenceNumber - b.sequenceNumber;
+    }
+
     render() {
         let reportHistory = [];
         if (this.state && this.state.reportHistory) {
@@ -124,13 +129,13 @@ class ReportHistoryView extends React.Component {
                 bounces={false}
                 style={[styles.chatContentInner]}
             >
-                {_.map(reportHistory, (item, index) => (
+                {_.chain(reportHistory).sortBy(this.sortReportHistory).map((item, index) => (
                     <ReportHistoryItem
                         key={item.sequenceNumber}
                         historyItem={item}
                         displayAsGroup={this.isConsecutiveHistoryItemMadeByPreviousActor(index)}
                     />
-                ))}
+                )).value().reverse()}
             </ScrollView>
         );
     }
