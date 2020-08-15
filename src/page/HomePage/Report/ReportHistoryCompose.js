@@ -68,18 +68,21 @@ class ReportHistoryCompose extends React.Component {
 
         this.props.onSubmit(this.props.reportID, this.state.comment);
         this.setState({
-            comment: '',
+            comment: '123',
         });
+        console.log('clear')
+        this.textInput.clear();
     }
 
     render() {
         return (
             <View style={[styles.chatItemCompose]}>
                 <TextInputFocusable
-                    multiline
-                    blurOnSubmit
+                    ref={el => this.textInput = el}
+                    // blurOnSubmit
+                    // multiline
                     textAlignVertical="top"
-                    numberOfLines={1}
+                    // numberOfLines={1}
                     minHeight={40}
                     maxHeight={60}
                     placeholder="Write something..."
