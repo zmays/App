@@ -99,7 +99,8 @@ function verifyAuthToken() {
                             .fail(promise.reject);
                     }
 
-                    // If the auth token is bad and we didn't have credentials saved, we want them to go to the sign in page
+                    // If the auth token is bad and we didn't have credentials saved, we want them to go to the
+                    // sign in page
                     redirectToSignIn()
                         .done(promise.resolve)
                         .fail(promise.reject);

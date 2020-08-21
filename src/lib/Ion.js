@@ -223,11 +223,12 @@ function merge(key, val) {
     const promise = new Deferred();
 
     AsyncStorage.mergeItem(key, JSON.stringify(val))
-        .then(() => get(key))
-        .then((newObject) => {
-            keyChanged(key, newObject);
+        .then(() => {
+            get(key).done((newObject) => {
+                keyChanged(key, newObject);
+                promise.resolve();
+            });
         })
-        .then(() => promise.resolve())
         .catch(promise.reject);
 
     return promise;

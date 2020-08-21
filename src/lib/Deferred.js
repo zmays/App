@@ -11,7 +11,7 @@ function Deferred() {
         while (i--) {
             list[i].apply(null, arrayOfArguments);
         }
-    };
+    }
 
     return {
         resolve(...params) {

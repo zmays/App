@@ -102,7 +102,7 @@ function fetchAll() {
         shouldLoadOptionalKeys: true,
     }));
 
-    return promiseAllSettled(reportFetchPromises)
+    promiseAllSettled(reportFetchPromises)
         .done((data) => {
             // Get all of our reports from the responses
             const fetchedReports = _.compact(_.map(data, (response) => {
@@ -242,7 +242,7 @@ function updateLastReadActionID(accountID, reportID, sequenceNumber) {
     })
 
         // Update the lastReadActionID on the report optimistically
-        .then(() => queueRequest('Report_SetLastReadActionID', {
+        .done(() => queueRequest('Report_SetLastReadActionID', {
             accountID,
             reportID,
             sequenceNumber,

@@ -100,15 +100,13 @@ class ReportHistoryView extends React.Component {
      * @param {number} maxSequenceNumber
      */
     recordlastReadActionID(maxSequenceNumber) {
-        let myAccountID;
         Ion.get(IONKEYS.SESSION, 'accountID')
             .done((accountID) => {
-                myAccountID = accountID;
                 const path = `reportNameValuePairs.lastReadActionID_${accountID}`;
                 Ion.get(`${IONKEYS.REPORT}_${this.props.reportID}`, path, 0)
                     .done((lastReadActionID) => {
                         if (maxSequenceNumber > lastReadActionID) {
-                            updateLastReadActionID(myAccountID, this.props.reportID, maxSequenceNumber);
+                            updateLastReadActionID(accountID, this.props.reportID, maxSequenceNumber);
                         }
                     });
             });

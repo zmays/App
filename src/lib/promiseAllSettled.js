@@ -4,7 +4,7 @@
  */
 
 import _ from 'underscore';
-import Deferred from '../Deferred';
+import Deferred from './Deferred';
 
 /**
  * Returns a promise that is resolved when all provided promises are either resolved or rejected
