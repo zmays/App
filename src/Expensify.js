@@ -51,7 +51,7 @@ class Expensify extends Component {
         // we will fall through to the homepage and the user will see a brief flash of the main
         // app experience.
         Ion.get(IONKEYS.SESSION, 'authToken', '')
-            .then((authToken) => {
+            .done((authToken) => {
                 this.setState({loading: false, authToken});
             });
     }

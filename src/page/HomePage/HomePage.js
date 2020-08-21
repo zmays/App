@@ -35,17 +35,18 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        Ion.get(IONKEYS.SESSION, 'authToken').then((authToken) => {
-            if (authToken) {
-                // Initialize the pusher connection
-                pusher.init(null, {
-                    authToken,
-                });
+        Ion.get(IONKEYS.SESSION, 'authToken')
+            .done((authToken) => {
+                if (authToken) {
+                    // Initialize the pusher connection
+                    pusher.init(null, {
+                        authToken,
+                    });
 
-                // Setup the report action handler to subscribe to pusher
-                initPusher();
-            }
-        });
+                    // Setup the report action handler to subscribe to pusher
+                    initPusher();
+                }
+            });
         Dimensions.addEventListener('change', this.toggleHamburgerBasedOnDimensions);
 
         StatusBar.setBarStyle('dark-content', true);

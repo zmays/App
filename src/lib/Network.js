@@ -7,6 +7,7 @@ import Str from './Str';
 import Guid from './Guid';
 import {registerSocketEventCallback} from './Pusher/pusher';
 import redirectToSignIn from './actions/ActionsSignInRedirect';
+import Deferred from './Deferred';
 
 let isAppOffline = false;
 
@@ -73,7 +74,7 @@ function queueRequest(command, data) {
  *
  * @param {object} data
  * @param {string} exitTo
- * @returns {Promise}
+ * @returns {Deferred}
  */
 function setSuccessfulSignInData(data, exitTo) {
     return Ion.multiSet({
@@ -90,29 +91,30 @@ function setSuccessfulSignInData(data, exitTo) {
  * @param {String} command the name of the API command
  * @param {Object} data parameters for the API command
  * @param {String} type HTTP request type (get/post)
- * @returns {Promise}
+ * @returns {Deferred}
  */
 function xhr(command, data, type = 'post') {
-    return Ion.get(IONKEYS.SESSION, 'authToken')
-        .then((authToken) => {
+    const promise = new Deferred();
+    
+    Ion.get(IONKEYS.SESSION, 'authToken')
+        .done((authToken) => {
             const formData = new FormData();
 
             // If we're calling Authenticate we don't need an authToken, so let's not send "undefined"
             if (command !== 'Authenticate') {
                 formData.append('authToken', authToken);
             }
-            _.each(data, (val, key) => formData.append(key, val));
-            return formData;
-        })
-        .then(formData => fetch(`${CONFIG.EXPENSIFY.API_ROOT}command=${command}`, {
-            method: type,
-            body: formData,
-        })
-            .then(response => response.json()))
 
-        // This will catch any HTTP network errors (like 404s and such), not to be confused with jsonCode which this
-        // does NOT catch
-        .catch(() => {
+            _.each(data, (val, key) => formData.append(key, val));
+
+            fetch(`${CONFIG.EXPENSIFY.API_ROOT}command=${command}`, {
+                method: type,
+                body: formData,
+            })
+                .then(response => promise.resolve(response.json()))
+                .catch(promise.reject);
+        })
+        .fail(() => {
             isAppOffline = true;
             Ion.merge(IONKEYS.NETWORK, {isOffline: true});
 
@@ -122,17 +124,17 @@ function xhr(command, data, type = 'post') {
                 queueRequest(command, data);
             }
 
-            // Throw a new error to prevent any other `then()` in the promise chain from being triggered (until another
-            // catch() happens
-            throw new Error('API is offline');
+            promise.reject();
         });
+
+    return promise;
 }
 
 /**
  * Create login
  * @param {string} login
  * @param {string} password
- * @returns {Promise}
+ * @returns {Deferred}
  */
 function createLogin(login, password) {
     // We call createLogin after getting a successful response to the Authenticate request
@@ -144,8 +146,8 @@ function createLogin(login, password) {
         partnerUserID: login,
         partnerUserSecret: password,
     })
-        .then(() => Ion.set(IONKEYS.CREDENTIALS, {login, password}))
-        .catch(err => Ion.merge(IONKEYS.SESSION, {error: err}));
+        .done(() => Ion.set(IONKEYS.CREDENTIALS, {login, password}))
+        .fail(err => Ion.merge(IONKEYS.SESSION, {error: err}));
 }
 
 /**
@@ -158,9 +160,11 @@ function createLogin(login, password) {
  * @param {string} command
  * @param {mixed} data
  * @param {string} [type]
- * @returns {Promise}
+ * @returns {Deferred}
  */
 function request(command, data, type = 'post') {
+    const promise = Deferred();
+
     // If we're in the process of re-authenticating, queue this request for after we're done re-authenticating
     if (reauthenticating) {
         return queueRequest(command, data);
@@ -170,8 +174,9 @@ function request(command, data, type = 'post') {
     // with 407 authToken expired. When other api commands fail with this error we call Authenticate
     // to get a new authToken and then fire the original api command again
     if (command === 'Authenticate') {
-        return xhr(command, data, type)
-            .then((response) => {
+        xhr(command, data, type)
+            .done((response) => {
+                debugger;
                 // If we didn't get a 200 response from authenticate and useExpensifyLogin != true, it means we're
                 // trying to authenticate with the login credentials we created after the initial authentication, and
                 // failing, so we need the user to sign in again with their expensify credentials again, which they can
@@ -181,49 +186,54 @@ function request(command, data, type = 'post') {
                         [IONKEYS.CREDENTIALS]: {},
                         [IONKEYS.SESSION]: {error: response.message},
                     })
-                        .then(redirectToSignIn);
+                        .done(redirectToSignIn);
                 }
-                return setSuccessfulSignInData(response, data.exitTo);
-            })
-            .then((response) => {
-                // If Expensify login, it's the users first time signing in and we need to
-                // create a login for the user
-                if (data.useExpensifyLogin) {
-                    console.debug('[SIGNIN] Creating a login');
-                    return createLogin(Str.generateDeviceLoginID(), Guid());
-                }
-                return response;
+                setSuccessfulSignInData(response, data.exitTo)
+                    .done(() => {
+                        // If Expensify login, it's the users first time signing in and we need to
+                        // create a login for the user
+                        if (data.useExpensifyLogin) {
+                            console.debug('[SIGNIN] Creating a login');
+                            createLogin(Str.generateDeviceLoginID(), Guid()).done(promise.resolve);
+                        }
+                    });
             });
     }
 
     // Make the http request, and if we get 407 jsonCode in the response,
     // re-authenticate to get a fresh authToken and make the original http request again
-    return xhr(command, data, type)
-        .then((responseData) => {
+    xhr(command, data, type)
+        .done((responseData) => {
             if (!reauthenticating && responseData.jsonCode === 407 && data.doNotRetry !== true) {
                 reauthenticating = true;
                 return Ion.get(IONKEYS.CREDENTIALS)
-                    .then(({login, password}) => xhr('Authenticate', {
-                        useExpensifyLogin: false,
-                        partnerName: CONFIG.EXPENSIFY.PARTNER_NAME,
-                        partnerPassword: CONFIG.EXPENSIFY.PARTNER_PASSWORD,
-                        partnerUserID: login,
-                        partnerUserSecret: password,
-                        twoFactorAuthCode: ''
-                    })
-                        .then((response) => {
-                            reauthenticating = false;
-                            return setSuccessfulSignInData(response);
+                    .done(({login, password}) => {
+                        xhr('Authenticate', {
+                            useExpensifyLogin: false,
+                            partnerName: CONFIG.EXPENSIFY.PARTNER_NAME,
+                            partnerPassword: CONFIG.EXPENSIFY.PARTNER_PASSWORD,
+                            partnerUserID: login,
+                            partnerUserSecret: password,
+                            twoFactorAuthCode: ''
                         })
-                        .then(() => xhr(command, data, type))
-                        .catch(() => {
-                            reauthenticating = false;
-                            redirectToSignIn();
-                            return Promise.reject();
-                        }));
+                            .done((response) => {
+                                reauthenticating = false;
+                                setSuccessfulSignInData(response)
+                                    .done(() => {
+                                        xhr(command, data, type)
+                                            .fail(() => {
+                                                reauthenticating = false;
+                                                redirectToSignIn();
+                                                promise.reject();
+                                            });
+                                    });
+                            });
+                    });
             }
-            return responseData;
+            promise.resolve(responseData);
         });
+
+    return promise;
 }
 
 /**
@@ -237,8 +247,10 @@ function processNetworkRequestQueue() {
 
         // Make a simple request every second to see if the API is online again
         request('Get', {doNotRetry: true})
-            .then(() => Ion.merge(IONKEYS.NETWORK, {isOffline: false}))
-            .then(() => isAppOffline = false);
+            .done(() => {
+                Ion.merge(IONKEYS.NETWORK, {isOffline: false});
+                isAppOffline = false;
+            });
         return;
     }
 
@@ -251,7 +263,7 @@ function processNetworkRequestQueue() {
         // Take the request object out of the queue and make the request
         const queuedRequest = networkRequestQueue.shift();
         request(queuedRequest.command, queuedRequest.data)
-            .then(queuedRequest.callback);
+            .done(queuedRequest.callback);
     }
 }
 

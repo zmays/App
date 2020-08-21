@@ -1,6 +1,7 @@
 import lodashGet from 'lodash.get';
 import _ from 'underscore';
 import AsyncStorage from '@react-native-community/async-storage';
+import Deferred from './Deferred';
 
 // Keeps track of the last connectionID that was used so we can keep incrementing it
 let lastConnectionID = 0;
@@ -93,18 +94,23 @@ function keyChanged(key, data) {
 }
 
 /**
- * Write a value to our store with the given key
+ * Write a value to our persistent storage with the given key
  *
  * @param {string} key
  * @param {mixed} val
  * @returns {Promise}
  */
 function set(key, val) {
-    // Write the thing to persistent storage, which will trigger a storage event for any other tabs open on this domain
-    return AsyncStorage.setItem(key, JSON.stringify(val))
+    const promise = new Deferred();
+
+    AsyncStorage.setItem(key, JSON.stringify(val))
         .then(() => {
             keyChanged(key, val);
-        });
+        })
+        .then(() => promise.resolve())
+        .catch(promise.reject);
+
+    return promise;
 }
 
 /**
@@ -117,7 +123,9 @@ function set(key, val) {
  * @returns {*}
  */
 function get(key, extraPath, defaultValue) {
-    return AsyncStorage.getItem(key)
+    const promise = new Deferred();
+
+    AsyncStorage.getItem(key)
         .then(val => JSON.parse(val))
         .then((val) => {
             if (extraPath) {
@@ -125,7 +133,13 @@ function get(key, extraPath, defaultValue) {
             }
             return val;
         })
-        .catch(err => console.error(`Unable to get item from persistent storage. Key: ${key} Error: ${err}`));
+        .then(() => promise.resolve())
+        .catch((err) => {
+            console.error(`Unable to get item from persistent storage. Key: ${key} Error: ${err}`);
+            promise.reject(err);
+        });
+
+    return promise;
 }
 
 /**
@@ -135,16 +149,24 @@ function get(key, extraPath, defaultValue) {
  * @returns {Promise}
  */
 function multiGet(keys) {
+    const promise = new Deferred();
+
     // AsyncStorage returns the data in an array format like:
     // [ ['@MyApp_user', 'myUserValue'], ['@MyApp_key', 'myKeyValue'] ]
     // This method will transform the data into a better JSON format like:
     // {'@MyApp_user': 'myUserValue', '@MyApp_key': 'myKeyValue'}
-    return AsyncStorage.multiGet(keys)
+    AsyncStorage.multiGet(keys)
         .then(arrayOfData => _.reduce(arrayOfData, (finalData, keyValuePair) => ({
             ...finalData,
             [keyValuePair[0]]: JSON.parse(keyValuePair[1]),
         }), {}))
-        .catch(err => console.error(`Unable to get item from persistent storage. Error: ${err}`, keys));
+        .then(() => promise.resolve())
+        .catch((err) => {
+            console.error(`Unable to get item from persistent storage. Error: ${err}`, keys);
+            promise.reject(err);
+        });
+
+    return promise;
 }
 
 /**
@@ -155,6 +177,8 @@ function multiGet(keys) {
  * @returns {Promise}
  */
 function multiSet(data) {
+    const promise = new Deferred();
+
     // AsyncStorage expenses the data in an array like:
     // [["@MyApp_user", "value_1"], ["@MyApp_key", "value_2"]]
     // This method will transform the params from a better JSON format like:
@@ -163,10 +187,14 @@ function multiSet(data) {
         ...finalArray,
         [key, JSON.stringify(val)],
     ]), []);
-    return AsyncStorage.multiSet(keyValuePairs)
+    AsyncStorage.multiSet(keyValuePairs)
         .then(() => {
             _.each(data, (val, key) => keyChanged(key, val));
-        });
+        })
+        .then(() => promise.resolve())
+        .catch(promise.reject);
+
+    return promise;
 }
 
 /**
@@ -175,7 +203,13 @@ function multiSet(data) {
  * @returns {Promise}
  */
 function clear() {
-    return AsyncStorage.clear();
+    const promise = new Deferred();
+
+    AsyncStorage.clear()
+        .then(() => promise.resolve())
+        .catch(promise.reject);
+
+    return promise;
 }
 
 /**
@@ -186,11 +220,17 @@ function clear() {
  * @returns {Promise}
  */
 function merge(key, val) {
-    return AsyncStorage.mergeItem(key, JSON.stringify(val))
+    const promise = new Deferred();
+
+    AsyncStorage.mergeItem(key, JSON.stringify(val))
         .then(() => get(key))
         .then((newObject) => {
             keyChanged(key, newObject);
-        });
+        })
+        .then(() => promise.resolve())
+        .catch(promise.reject);
+
+    return promise;
 }
 
 const Ion = {

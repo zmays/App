@@ -8,6 +8,7 @@ import CONFIG from '../../CONFIG';
 import * as pusher from '../Pusher/pusher';
 import promiseAllSettled from '../promiseAllSettled';
 import ExpensiMark from '../ExpensiMark';
+import Deferred from '../Deferred';
 
 /**
  * Updates a report in the store with a new report action
@@ -17,7 +18,7 @@ import ExpensiMark from '../ExpensiMark';
  */
 function updateReportWithNewAction(reportID, reportAction) {
     Ion.get(`${IONKEYS.REPORT}_${reportID}`, 'reportID')
-        .then((ionReportID) => {
+        .done((ionReportID) => {
             // This is necessary for local development because there will be pusher events from other engineers with
             // different reportIDs
             if (!CONFIG.IS_IN_PRODUCTION && !ionReportID) {
@@ -25,28 +26,22 @@ function updateReportWithNewAction(reportID, reportAction) {
             }
 
             // Get the report history and return that to the next chain
-            return Ion.get(`${IONKEYS.REPORT_HISTORY}_${reportID}`);
-        })
+            Ion.get(`${IONKEYS.REPORT_HISTORY}_${reportID}`)
+                .done((reportHistory) => {
+                    // Look to see if the report action from pusher already exists or not (it would exist if it's a
+                    // comment just written by the user). If the action doesn't exist, then update the unread flag
+                    // on the report so the user knows there is a new comment
+                    if (reportHistory && !reportHistory[reportAction.sequenceNumber]) {
+                        Ion.merge(`${IONKEYS.REPORT}_${reportID}`, {hasUnread: true});
+                    }
 
-        // Look to see if the report action from pusher already exists or not (it would exist if it's a comment just
-        // written by the user). If the action doesn't exist, then update the unread flag on the report so the user
-        // knows there is a new comment
-        .then((reportHistory) => {
-            if (reportHistory && !reportHistory[reportAction.sequenceNumber]) {
-                Ion.merge(`${IONKEYS.REPORT}_${reportID}`, {hasUnread: true});
-            }
-            return reportHistory || {};
-        })
+                    const modifiedReportHistory = {
+                        ...reportHistory,
+                        [reportAction.sequenceNumber]: reportAction,
+                    };
 
-        // Put the report action from pusher into the history, it's OK to overwrite it if it already exists
-        .then(reportHistory => ({
-            ...reportHistory,
-            [reportAction.sequenceNumber]: reportAction,
-        }))
-
-        // Put the report history back into Ion
-        .then((reportHistory) => {
-            Ion.set(`${IONKEYS.REPORT_HISTORY}_${reportID}`, reportHistory);
+                    Ion.set(`${IONKEYS.REPORT_HISTORY}_${reportID}`, modifiedReportHistory);
+                });
         });
 }
 
@@ -84,7 +79,7 @@ function hasUnreadHistoryItems(accountID, report) {
  */
 function initPusher() {
     return Ion.get(IONKEYS.SESSION, 'accountID')
-        .then((accountID) => {
+        .done((accountID) => {
             const pusherChannelName = `private-user-accountID-${accountID}`;
             pusher.subscribe(pusherChannelName, 'reportComment', (pushJSON) => {
                 updateReportWithNewAction(pushJSON.reportID, pushJSON.reportAction);
@@ -148,7 +143,7 @@ function fetchHistory(reportID) {
         reportID,
         offset: 0,
     })
-        .then((data) => {
+        .done((data) => {
             const indexedData = _.indexBy(data.history, 'sequenceNumber');
             Ion.set(`${IONKEYS.REPORT_HISTORY}_${reportID}`, indexedData);
         });
@@ -159,17 +154,18 @@ function fetchHistory(reportID) {
  *
  * @param {string} reportID
  * @param {string} reportComment
- * @returns {Promise}
+ * @returns {Deferred}
  */
 function addHistoryItem(reportID, reportComment) {
+    const promise = new Deferred();
     const historyKey = `${IONKEYS.REPORT_HISTORY}_${reportID}`;
 
     // Convert the comment from MD into HTML because that's how it is stored in the database
     const parser = new ExpensiMark();
     const htmlComment = parser.replace(reportComment);
 
-    return Ion.multiGet([historyKey, IONKEYS.SESSION, IONKEYS.PERSONAL_DETAILS])
-        .then((values) => {
+    Ion.multiGet([historyKey, IONKEYS.SESSION, IONKEYS.PERSONAL_DETAILS])
+        .done((values) => {
             const reportHistory = values[historyKey];
             const email = values[IONKEYS.SESSION].email || '';
             const personalDetails = lodashGet(values, [IONKEYS.PERSONAL_DETAILS, email], {});
@@ -182,11 +178,11 @@ function addHistoryItem(reportID, reportComment) {
             const newSequenceNumber = highestSequenceNumber + 1;
 
             // Optimistically add the new comment to the store before waiting to save it to the server
-            return Ion.set(historyKey, {
+            Ion.set(historyKey, {
                 ...reportHistory,
                 [newSequenceNumber]: {
                     actionName: 'ADDCOMMENT',
-                    actorEmail: Ion.get(IONKEYS.SESSION, 'email'),
+                    actorEmail: email,
                     person: [
                         {
                             style: 'strong',
@@ -210,12 +206,18 @@ function addHistoryItem(reportID, reportComment) {
                     isFirstItem: false,
                     isAttachmentPlaceHolder: false,
                 }
-            });
-        })
-        .then(() => queueRequest('Report_AddComment', {
-            reportID,
-            reportComment: htmlComment,
-        }));
+            })
+                .done(() => {
+                    queueRequest('Report_AddComment', {
+                        reportID,
+                        reportComment: htmlComment,
+                    })
+                        .done(promise.resolve)
+                        .fail(promise.reject);
+                });
+        });
+
+    return promise;
 }
 
 /**

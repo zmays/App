@@ -164,8 +164,8 @@ export default WithIon({
         key: `${IONKEYS.REPORT}_[0-9]+$`,
         addAsCollection: true,
         collectionID: 'reportID',
-        loader: () => fetchAll().then(() => {
-            Ion.multiGet([IONKEYS.CURRENT_URL, IONKEYS.FIRST_REPORT_ID]).then((values) => {
+        loader: () => fetchAll().done(() => {
+            Ion.multiGet([IONKEYS.CURRENT_URL, IONKEYS.FIRST_REPORT_ID]).done((values) => {
                 const currentURL = values[IONKEYS.CURRENT_URL] || '';
                 const firstReportID = values[IONKEYS.FIRST_REPORT_ID] || 0;
 
