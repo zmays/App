@@ -133,7 +133,7 @@ function get(key, extraPath, defaultValue) {
             }
             return val;
         })
-        .then(() => promise.resolve())
+        .then(val => promise.resolve(val))
         .catch((err) => {
             console.error(`Unable to get item from persistent storage. Key: ${key} Error: ${err}`);
             promise.reject(err);
@@ -160,7 +160,7 @@ function multiGet(keys) {
             ...finalData,
             [keyValuePair[0]]: JSON.parse(keyValuePair[1]),
         }), {}))
-        .then(() => promise.resolve())
+        .then(val => promise.resolve(val))
         .catch((err) => {
             console.error(`Unable to get item from persistent storage. Error: ${err}`, keys);
             promise.reject(err);

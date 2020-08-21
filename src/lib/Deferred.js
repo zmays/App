@@ -2,22 +2,23 @@ function Deferred() {
     const doneCallbacks = [];
     const failCallbacks = [];
 
+    function execute(list, args) {
+        let i = list.length;
+
+        // Convert arguments to an array so they can be sent to the callbacks via the apply method
+        const arrayOfArguments = Array.prototype.slice.call(args);
+
+        while (i--) {
+            list[i].apply(null, arrayOfArguments);
+        }
+    };
+
     return {
-        execute(list, args) {
-            let i = list.length;
-
-            // Convert arguments to an array so they can be sent to the callbacks via the apply method
-            const arrayOfArguments = Array.prototype.slice.call(args);
-
-            while (i--) {
-                list[i].apply(null, arrayOfArguments);
-            }
-        },
         resolve(...params) {
-            this.execute(doneCallbacks, params);
+            execute(doneCallbacks, params);
         },
         reject(...params) {
-            this.execute(failCallbacks, params);
+            execute(failCallbacks, params);
         },
         done(callback) {
             doneCallbacks.push(callback);
@@ -26,7 +27,7 @@ function Deferred() {
         fail(callback) {
             failCallbacks.push(callback);
             return this;
-        },
+        }
     };
 }
 

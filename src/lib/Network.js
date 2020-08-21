@@ -55,18 +55,20 @@ registerSocketEventCallback((eventName, data) => {
  * @returns {Promise}
  */
 function queueRequest(command, data) {
-    return new Promise((resolve) => {
-        // Add the write request to a queue of actions to perform
-        networkRequestQueue.push({
-            command,
-            data,
-            callback: resolve,
-        });
+    const promise = new Deferred();
 
-        // Try to fire off the request as soon as it's queued so we don't add a delay to every queued command
-        // eslint-disable-next-line no-use-before-define
-        processNetworkRequestQueue();
+    // Add the write request to a queue of actions to perform
+    networkRequestQueue.push({
+        command,
+        data,
+        callback: promise.resolve,
     });
+
+    // Try to fire off the request as soon as it's queued so we don't add a delay to every queued command
+    // eslint-disable-next-line no-use-before-define
+    processNetworkRequestQueue();
+
+    return promise;
 }
 
 /**
@@ -95,7 +97,7 @@ function setSuccessfulSignInData(data, exitTo) {
  */
 function xhr(command, data, type = 'post') {
     const promise = new Deferred();
-    
+
     Ion.get(IONKEYS.SESSION, 'authToken')
         .done((authToken) => {
             const formData = new FormData();
@@ -111,7 +113,7 @@ function xhr(command, data, type = 'post') {
                 method: type,
                 body: formData,
             })
-                .then(response => promise.resolve(response.json()))
+                .then(response => response.json().then(promise.resolve))
                 .catch(promise.reject);
         })
         .fail(() => {
@@ -176,7 +178,6 @@ function request(command, data, type = 'post') {
     if (command === 'Authenticate') {
         xhr(command, data, type)
             .done((response) => {
-                debugger;
                 // If we didn't get a 200 response from authenticate and useExpensifyLogin != true, it means we're
                 // trying to authenticate with the login credentials we created after the initial authentication, and
                 // failing, so we need the user to sign in again with their expensify credentials again, which they can
