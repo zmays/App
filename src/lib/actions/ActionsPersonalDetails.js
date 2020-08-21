@@ -36,9 +36,7 @@ function fetch() {
             }
 
             const currentLogin = email;
-            queueRequest('Get', {
-                returnValueList: 'personalDetailsList',
-            })
+            queueRequest('Get', {returnValueList: 'personalDetailsList'})
                 .done((data) => {
                     const allPersonalDetails = _.reduce(data.personalDetailsList, (obj, personalDetails, login) => {
                         // Form the details into something that has all the data in an easy to use format.
@@ -62,13 +60,10 @@ function fetch() {
                         };
                     }, {});
 
-                    // Get my personal details so they can be easily accessed and subscribed to on their own key
-                    const myPersonalDetails = allPersonalDetails[currentLogin] || {};
+                    Ion.set(IONKEYS.PERSONAL_DETAILS, allPersonalDetails);
 
-                    Ion.set(IONKEYS.PERSONAL_DETAILS, allPersonalDetails)
-                        .done(() => {
-                            Ion.merge(IONKEYS.MY_PERSONAL_DETAILS, myPersonalDetails);
-                        });
+                    // Get my personal details so they can be easily accessed and subscribed to on their own key
+                    Ion.merge(IONKEYS.MY_PERSONAL_DETAILS, allPersonalDetails[currentLogin] || {});
                 });
         });
 
