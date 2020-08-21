@@ -91,7 +91,7 @@ function verifyAuthToken() {
 
             // We make this request to see if we have a valid authToken, and we only want to retry it if we know we
             // have credentials to re-authenticate
-            return request('Get', {returnValueList: 'account', doNotRetry: !haveCredentials})
+            request('Get', {returnValueList: 'account', doNotRetry: !haveCredentials})
                 .done((data) => {
                     if (data && data.jsonCode === 200) {
                         return Ion.merge(IONKEYS.SESSION, data)
