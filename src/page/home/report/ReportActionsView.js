@@ -1,5 +1,7 @@
 import React from 'react';
-import {View, ScrollView, Keyboard} from 'react-native';
+import {
+    View, ScrollView, VirtualizedList, Keyboard
+} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash.get';
@@ -147,6 +149,18 @@ class ReportActionsView extends React.Component {
         this.recordMaxAction();
     }
 
+    /**
+     * Returns the report history with everything but comments filtered out
+     *
+     * @returns {string[]}
+     */
+    getFilteredReportHistory() {
+        const reportHistory = this.props.reportActions;
+
+        // Only return comments
+        return _.filter(reportHistory, historyItem => historyItem.actionName === 'ADDCOMMENT').reverse();
+    }
+
     render() {
         if (!_.size(this.props.reportActions)) {
             return (
@@ -156,23 +170,38 @@ class ReportActionsView extends React.Component {
             );
         }
 
+        const filteredHistory = this.getFilteredReportHistory();
+
         return (
-            <ScrollView
-                ref={(el) => {
-                    this.actionListElement = el;
-                }}
-                onContentSizeChange={this.scrollToListBottom}
-                bounces={false}
-                contentContainerStyle={[styles.chatContentScrollView]}
-            >
-                {_.chain(this.props.reportActions).sortBy('sequenceNumber').map((item, index) => (
+            <VirtualizedList
+                data={filteredHistory}
+                getItemCount={() => filteredHistory.length}
+                getItem={(data, index) => filteredHistory[index]}
+                initialNumToRender="10"
+                inverted
+                renderItem={({index, item}) => (
                     <ReportActionItem
                         key={item.sequenceNumber}
                         action={item}
                         displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(index)}
                     />
-                )).value()}
-            </ScrollView>
+                )}
+                viewabilityConfig={{
+                    itemVisiblePercentThreshold: 100,
+                }}
+                onViewableItemsChanged={({viewableItems}) => {
+                    const maxVisibleSequenceNumber = _.chain(viewableItems)
+                        .pluck('item')
+                        .pluck('sequenceNumber')
+                        .max()
+                        .value();
+                    this.recordlastReadActionID(maxVisibleSequenceNumber);
+                }}
+                onEndReached={() => this.recordMaxAction()}
+
+                // We have to return a string for the key or else FlatList throws an error
+                keyExtractor={reportHistoryItem => `${reportHistoryItem.sequenceNumber}`}
+            />
         );
     }
 }
