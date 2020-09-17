@@ -22,16 +22,14 @@ export default function (propNameToBatch, batches) {
             constructor(props) {
                 super(props);
 
-                this.state = {
-                    itemsToRender: null,
-                };
+                this.state = {};
             }
 
             componentDidMount() {
                 _.each(batches, (batch) => {
                     setTimeout(() => {
                         this.setState({
-                            itemsToRender: batch.items(this.props),
+                            [propNameToBatch]: batch.items(this.props),
                         });
                     }, batch.delay || 0);
                 });
@@ -41,17 +39,19 @@ export default function (propNameToBatch, batches) {
                 if (_.size(prevProps[propNameToBatch]) !== _.size(this.props[propNameToBatch])) {
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
-                        itemsToRender: this.props[propNameToBatch],
+                        [propNameToBatch]: this.props[propNameToBatch],
                     });
                 }
             }
 
             render() {
+                const propsToPass = _.omit(this.props, propNameToBatch);
+
                 // Spreading props and state is necessary in an HOC where the data cannot be predicted
                 return (
                     <WrappedComponent
                         // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...this.props}
+                        {...propsToPass}
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         {...this.state}
                     />
