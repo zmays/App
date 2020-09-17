@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ScrollView, Keyboard} from 'react-native';
+import {View, Keyboard} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash.get';
@@ -12,6 +12,7 @@ import styles from '../../../style/StyleSheet';
 import {withRouter} from '../../../lib/Router';
 import ReportActionPropTypes from './ReportActionPropTypes';
 import compose from '../../../lib/compose';
+import InvertedFlatList from '../../../components/InvertedFlatList'
 
 const propTypes = {
     // These are from withRouter
@@ -135,23 +136,31 @@ class ReportActionsView extends React.Component {
             );
         }
 
+        const data = _.chain(this.props.reportActions)
+            .sortBy('sequenceNumber')
+            .map((item) => item)
+            .value()
+            .reverse();
+
         return (
-            <ScrollView
-                ref={(el) => {
-                    this.actionListElement = el;
+            <InvertedFlatList
+                ref={(el) => this.actionListElement = el}
+                // onContentSizeChange={this.scrollToListBottom}
+                contentContainerStyle={[
+                    styles.chatContentScrollView,
+                ]}
+                data={data}
+                keyExtractor={(item) => `${item.sequenceNumber}`}
+                renderItem={({item, index}) => {
+                    return (
+                        <ReportActionItem
+                            key={item.sequenceNumber}
+                            action={item}
+                            displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(index)}
+                        />
+                    );
                 }}
-                onContentSizeChange={this.scrollToListBottom}
-                bounces={false}
-                contentContainerStyle={[styles.chatContentScrollView]}
-            >
-                {_.chain(this.props.reportActions).sortBy('sequenceNumber').map((item, index) => (
-                    <ReportActionItem
-                        key={item.sequenceNumber}
-                        action={item}
-                        displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(index)}
-                    />
-                )).value()}
-            </ScrollView>
+            />
         );
     }
 }
