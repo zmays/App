@@ -22,7 +22,9 @@ export default function (propNameToBatch, batches) {
             constructor(props) {
                 super(props);
 
-                this.state = {};
+                this.state = {
+                    [propNameToBatch]: null,
+                };
             }
 
             componentDidMount() {
