@@ -138,7 +138,7 @@ class ReportActionsView extends React.Component {
 
         const data = _.chain(this.props.reportActions)
             .sortBy('sequenceNumber')
-            .map((item) => item)
+            .map((action, index) => ({action, index}))
             .value()
             .reverse();
 
@@ -150,13 +150,13 @@ class ReportActionsView extends React.Component {
                     styles.chatContentScrollView,
                 ]}
                 data={data}
-                keyExtractor={(item) => `${item.sequenceNumber}`}
-                renderItem={({item, index}) => {
+                keyExtractor={(item) => `${item.action.sequenceNumber}`}
+                renderItem={({item}) => {
                     return (
                         <ReportActionItem
-                            key={item.sequenceNumber}
-                            action={item}
-                            displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(index)}
+                            key={item.action.sequenceNumber}
+                            action={item.action}
+                            displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(item.index)}
                         />
                     );
                 }}
