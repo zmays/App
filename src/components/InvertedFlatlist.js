@@ -2,16 +2,25 @@ import React, {Component, forwardRef} from 'react';
 import {FlatList} from 'react-native';
 
 const MAX_ITEMS_TO_INCREMENT = 10;
-const LIST_SIZE = 50;
+const MAX_LIST_SIZE = 50;
 const THRESHOLD = 200;
 
+/**
+ * This component handles very large lists that need to be inverted.
+ * We are not using FlatList by itself and need this abstraction since
+ * FlatList does not work correctly when inverted on web only. This
+ * component should work for web and mobile. One downside is that we
+ * must hide the scrollbars since we are only ever rendering an item
+ * count specified by MAX_LIST_SIZE.
+ */
 class InvertedFlatList extends Component {
     constructor(props) {
         super(props);
 
         // Start by showing the first 50 items
         this.startIndex = 0;
-        this.stopIndex = LIST_SIZE;
+        this.stopIndex = MAX_LIST_SIZE;
+        this.data = props.data;
         this.items = props.data.slice(this.startIndex, this.stopIndex);
 
         this.state = {
@@ -23,10 +32,10 @@ class InvertedFlatList extends Component {
         this.props.forwardedRef({
             // This enables us to programattically scroll to the bottom of
             // the list while any number of items are shown in the list by
-            // using a ref in the parent component
+            // using a ref in the parent component.
             scrollToBottom: () => {
                 this.startIndex = 0;
-                this.stopIndex = LIST_SIZE;
+                this.stopIndex = MAX_LIST_SIZE;
                 this.updateItems();
                 this.list.scrollToOffset({y: 0, animated: false});
             },
@@ -34,6 +43,8 @@ class InvertedFlatList extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        // Required so that new items that appear via props will make it into
+        // the list as they will not cause a re-render by default.
         if (prevProps.data.length === this.props.data.length) {
             return;
         }
@@ -41,6 +52,9 @@ class InvertedFlatList extends Component {
         this.updateItems();
     }
 
+    /**
+     * Update the items. The setState is largely here to trigger a re-render.
+     */
     updateItems() {
         if (this.state.isUpdating) {
             return;
@@ -50,10 +64,13 @@ class InvertedFlatList extends Component {
         this.setState({isUpdating: true}, () => this.setState({isUpdating: false}));
     }
 
+    /**
+     * Renders previous items in the list on scroll up
+     */
     loadPrevious() {
         // If the overall list size is less than the window size
         // then we already know there's nothing more to load
-        if (this.props.data.length < LIST_SIZE) {
+        if (this.props.data.length < MAX_LIST_SIZE) {
             return;
         }
 
@@ -70,6 +87,11 @@ class InvertedFlatList extends Component {
         this.updateItems();
     }
 
+    /**
+     * Renders next items in the list on scroll down.
+     *
+     * @param {Number} y - used to prevent a "stuck" scroll state
+     */
     loadNext(y) {
         // We are already at the bottom so don't do anything
         if (this.startIndex === 0) {
@@ -101,16 +123,20 @@ class InvertedFlatList extends Component {
                 data={this.items}
                 keyExtractor={this.props.keyExtractor}
                 renderItem={this.props.renderItem}
+
+                // We must disable the scroll indicator since it looks
+                // pretty janky. Our list is always a set size so updating
+                // it will make the scrollbars appear to jump around.
                 showsVerticalScrollIndicator={false}
                 onScroll={({nativeEvent}) => {
-                    // We are close to the top of the list
+                    // We are in range with the top of the list so we'll show the previous items
                     const top = nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y;
                     if (top >= nativeEvent.contentSize.height - THRESHOLD && top <= nativeEvent.contentSize.height) {
                         this.loadPrevious();
                         return;
                     }
 
-                    // We reached near the bottom of the list
+                    // We are in range with the bottom of the list so we'll show the next items
                     if (nativeEvent.contentOffset.y >= 0 && nativeEvent.contentOffset.y <= THRESHOLD) {
                         this.loadNext(nativeEvent.contentOffset.y);
                     }
