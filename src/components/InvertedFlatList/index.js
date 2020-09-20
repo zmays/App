@@ -2,6 +2,8 @@ import React, {Component, forwardRef} from 'react';
 import {FlatList} from 'react-native';
 
 const MAX_ITEMS_TO_INCREMENT = 10;
+const LIST_SIZE = 50;
+const THRESHOLD = 200;
 
 class InvertedFlatList extends Component {
     constructor(props) {
@@ -9,7 +11,7 @@ class InvertedFlatList extends Component {
 
         // Start by showing the first 50 items
         this.startIndex = 0;
-        this.stopIndex = 50;
+        this.stopIndex = LIST_SIZE;
         this.items = props.data.slice(this.startIndex, this.stopIndex);
 
         this.state = {
@@ -29,7 +31,6 @@ class InvertedFlatList extends Component {
 
     updateItems() {
         if (this.state.isUpdating) {
-            console.log('cant update already updating');
             return;
         }
 
@@ -38,7 +39,6 @@ class InvertedFlatList extends Component {
     }
 
     loadPrevious() {
-        console.log('loadPrevious');
         // Don't do anything as we are at the top of the list
         if (this.stopIndex === this.props.data.length) {
             return;
@@ -49,22 +49,23 @@ class InvertedFlatList extends Component {
         this.updateItems();
     }
 
-    loadNext() {
-        console.log('loadNext');
-        console.log('this.startIndex: ', this.startIndex);
-
+    loadNext(y) {
+        // We are already at the bottom so don't do anything
         if (this.startIndex === 0) {
-            // We are already at the bottom so don't do anything
             return;
         }
 
         this.stopIndex = this.stopIndex - MAX_ITEMS_TO_INCREMENT;
         this.startIndex = this.startIndex - MAX_ITEMS_TO_INCREMENT > 0 ? this.startIndex - MAX_ITEMS_TO_INCREMENT : 0;
-        console.log({
-            startIndex: this.startIndex,
-            stopIndex: this.stopIndex,
-        })
         this.updateItems();
+
+        // It's possible up at the bottom of the scrollable area and have more items to display.
+        // This can leave us stuck at y === 0, but unable to append more items to the list since
+        // there's nowhere left to scroll to. This is caused by very fast scrolling so we'll
+        // push the scroll position out of the threshold so the user can resume scrolling normally.
+        if (y === 0) {
+            this.list.scrollToOffset({offset: THRESHOLD, animated: false});
+        }
     }
 
     render() {
@@ -76,33 +77,20 @@ class InvertedFlatList extends Component {
                 data={this.items}
                 keyExtractor={this.props.keyExtractor}
                 renderItem={this.props.renderItem}
-                // showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
                 onScroll={({nativeEvent}) => {
-                    console.log('y: ', nativeEvent.contentOffset.y);
-
                     // We are close to the top of the list
                     const top = nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y;
-                    console.log('top: ', top);
-                    if (top >= nativeEvent.contentSize.height - 200 && top <= nativeEvent.contentSize.height) {
+                    if (top >= nativeEvent.contentSize.height - THRESHOLD && top <= nativeEvent.contentSize.height) {
                         this.loadPrevious();
                         return;
                     }
 
                     // We reached near the bottom of the list
-                    if (nativeEvent.contentOffset.y >= 0 && nativeEvent.contentOffset.y <= 200) {
-                        this.loadNext();
+                    if (nativeEvent.contentOffset.y >= 0 && nativeEvent.contentOffset.y <= THRESHOLD) {
+                        this.loadNext(nativeEvent.contentOffset.y);
                         return;
                     }
-
-                    // console.log(nativeEvent.contentOffset.y);
-
-                    console.log('Not updating');
-                    // console.log({
-                    //     top: nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y,
-                    //     contentSize: nativeEvent.contentSize.height,
-                    //     contentOffsetY: nativeEvent.contentOffset.y,
-                    //     layoutMeasurementHeight: nativeEvent.layoutMeasurement.height,
-                    // });
                 }}
             />
         );
