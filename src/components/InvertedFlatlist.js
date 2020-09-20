@@ -8,10 +8,9 @@ const THRESHOLD = 200;
 /**
  * This component handles very large lists that need to be inverted.
  * We are not using FlatList by itself and need this abstraction since
- * FlatList does not work correctly when inverted on web only. This
- * component should work for web and mobile. One downside is that we
- * must hide the scrollbars since we are only ever rendering an item
- * count specified by MAX_LIST_SIZE.
+ * FlatList does not work correctly when inverted on web only. One
+ * downside is that we must hide the scrollbars since we are only ever
+ * rendering an item count specified by MAX_LIST_SIZE.
  */
 class InvertedFlatList extends Component {
     constructor(props) {

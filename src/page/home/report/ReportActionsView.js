@@ -12,7 +12,7 @@ import styles from '../../../style/StyleSheet';
 import {withRouter} from '../../../lib/Router';
 import ReportActionPropTypes from './ReportActionPropTypes';
 import compose from '../../../lib/compose';
-import InvertedFlatList from '../../../components/InvertedFlatList';
+import InvertedFlatList from '../../../components/InvertedFlatlist';
 
 const propTypes = {
     // The ID of the report actions will be created for
