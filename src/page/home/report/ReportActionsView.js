@@ -117,7 +117,7 @@ class ReportActionsView extends React.Component {
      */
     scrollToListBottom() {
         if (this.actionListElement) {
-            this.actionListElement.scrollToEnd({animated: false});
+            this.actionListElement.scrollToBottom();
         }
         this.recordMaxAction();
     }

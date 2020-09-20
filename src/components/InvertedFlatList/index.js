@@ -20,7 +20,17 @@ class InvertedFlatList extends Component {
     }
 
     componentDidMount() {
-        this.props.forwardedRef(this.list);
+        this.props.forwardedRef({
+            // This enables us to programattically scroll to the bottom of
+            // the list while any number of items are shown in the list by
+            // using a ref in the parent component
+            scrollToBottom: () => {
+                this.startIndex = 0;
+                this.stopIndex = LIST_SIZE;
+                this.updateItems();
+                this.list.scrollToOffset({y: 0, animated: false});
+            },
+        });
     }
 
     componentDidUpdate(prevProps) {
