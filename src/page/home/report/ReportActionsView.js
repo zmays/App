@@ -12,13 +12,9 @@ import styles from '../../../style/StyleSheet';
 import {withRouter} from '../../../lib/Router';
 import ReportActionPropTypes from './ReportActionPropTypes';
 import compose from '../../../lib/compose';
-import InvertedFlatList from '../../../components/InvertedFlatList'
+import InvertedFlatList from '../../../components/InvertedFlatList';
 
 const propTypes = {
-    // These are from withRouter
-    // eslint-disable-next-line react/forbid-prop-types
-    match: PropTypes.object.isRequired,
-
     // The ID of the report actions will be created for
     reportID: PropTypes.number.isRequired,
 
@@ -46,11 +42,10 @@ class ReportActionsView extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const isReportVisible = this.props.reportID === parseInt(this.props.match.params.reportID, 10);
-
         // When the number of actions change, wait three seconds, then record the max action
         // This will make the unread indicator go away if you receive comments in the same chat you're looking at
-        if (isReportVisible && _.size(prevProps.reportActions) !== _.size(this.props.reportActions)) {
+        if (_.size(prevProps.reportActions) !== _.size(this.props.reportActions)) {
+            this.scrollToListBottom();
             setTimeout(this.recordMaxAction, 3000);
         }
     }
@@ -144,22 +139,19 @@ class ReportActionsView extends React.Component {
 
         return (
             <InvertedFlatList
-                ref={(el) => this.actionListElement = el}
-                // onContentSizeChange={this.scrollToListBottom}
+                ref={el => this.actionListElement = el}
                 contentContainerStyle={[
                     styles.chatContentScrollView,
                 ]}
                 data={data}
-                keyExtractor={(item) => `${item.action.sequenceNumber}`}
-                renderItem={({item}) => {
-                    return (
-                        <ReportActionItem
-                            key={item.action.sequenceNumber}
-                            action={item.action}
-                            displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(item.index)}
-                        />
-                    );
-                }}
+                keyExtractor={item => `${item.action.sequenceNumber}`}
+                renderItem={({item}) => (
+                    <ReportActionItem
+                        key={item.action.sequenceNumber}
+                        action={item.action}
+                        displayAsGroup={this.isConsecutiveActionMadeByPreviousActor(item.index)}
+                    />
+                )}
             />
         );
     }

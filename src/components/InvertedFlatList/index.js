@@ -24,9 +24,11 @@ class InvertedFlatList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.data.length !== this.props.data.length) {
-            this.updateItems();
+        if (prevProps.data.length === this.props.data.length) {
+            return;
         }
+
+        this.updateItems();
     }
 
     updateItems() {
@@ -39,12 +41,21 @@ class InvertedFlatList extends Component {
     }
 
     loadPrevious() {
+        // If the overall list size is less than the window size
+        // then we already know there's nothing more to load
+        if (this.props.data.length < LIST_SIZE) {
+            return;
+        }
+
         // Don't do anything as we are at the top of the list
         if (this.stopIndex === this.props.data.length) {
             return;
         }
 
-        this.stopIndex = this.stopIndex + MAX_ITEMS_TO_INCREMENT < this.props.data.length ? this.stopIndex + MAX_ITEMS_TO_INCREMENT : this.props.data.length;
+        this.stopIndex = this.stopIndex + MAX_ITEMS_TO_INCREMENT < this.props.data.length
+            ? this.stopIndex + MAX_ITEMS_TO_INCREMENT
+            : this.props.data.length;
+
         this.startIndex += MAX_ITEMS_TO_INCREMENT;
         this.updateItems();
     }
@@ -55,8 +66,11 @@ class InvertedFlatList extends Component {
             return;
         }
 
-        this.stopIndex = this.stopIndex - MAX_ITEMS_TO_INCREMENT;
-        this.startIndex = this.startIndex - MAX_ITEMS_TO_INCREMENT > 0 ? this.startIndex - MAX_ITEMS_TO_INCREMENT : 0;
+        this.stopIndex -= MAX_ITEMS_TO_INCREMENT;
+        this.startIndex = this.startIndex - MAX_ITEMS_TO_INCREMENT > 0
+            ? this.startIndex - MAX_ITEMS_TO_INCREMENT
+            : 0;
+
         this.updateItems();
 
         // It's possible up at the bottom of the scrollable area and have more items to display.
@@ -89,7 +103,6 @@ class InvertedFlatList extends Component {
                     // We reached near the bottom of the list
                     if (nativeEvent.contentOffset.y >= 0 && nativeEvent.contentOffset.y <= THRESHOLD) {
                         this.loadNext(nativeEvent.contentOffset.y);
-                        return;
                     }
                 }}
             />
@@ -98,5 +111,6 @@ class InvertedFlatList extends Component {
 }
 
 export default forwardRef((props, ref) => (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <InvertedFlatList {...props} forwardedRef={ref} />
 ));

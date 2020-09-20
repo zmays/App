@@ -26,29 +26,24 @@ const defaultProps = {
     reports: {},
 };
 
-class MainView extends React.Component {
-    render() {
-        if (!_.size(this.props.reports)) {
-            return null;
-        }
-
-        const reportIDInURL = parseInt(this.props.match.params.reportID, 10);
-
-        // The styles for each of our reports. Basically, they are all hidden except for the one matching the
-        // reportID in the URL
-        return (
-            <View
-                key={reportIDInURL}
-                style={[styles.dFlex, styles.flex1]}
-            >
-                <ReportView
-                    reportID={reportIDInURL}
-                    isActiveReport
-                />
-            </View>
-        );
+const MainView = (props) => {
+    if (!_.size(props.reports)) {
+        return null;
     }
-}
+
+    const reportIDInURL = parseInt(props.match.params.reportID, 10);
+    return (
+        <View
+            key={reportIDInURL}
+            style={[styles.dFlex, styles.flex1]}
+        >
+            <ReportView
+                reportID={reportIDInURL}
+                isActiveReport
+            />
+        </View>
+    );
+};
 
 MainView.propTypes = propTypes;
 MainView.defaultProps = defaultProps;
