@@ -37,6 +37,11 @@ class ReportActionsView extends React.Component {
 
         this.scrollToListBottom = this.scrollToListBottom.bind(this);
         this.recordMaxAction = this.recordMaxAction.bind(this);
+        this.enableOrDisableAutoScroll = this.enableOrDisableAutoScroll.bind(this);
+
+        this.state = {
+            shouldAutoScroll: true,
+        };
     }
 
     componentDidMount() {
@@ -44,7 +49,10 @@ class ReportActionsView extends React.Component {
         fetchActions(this.props.reportID);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
+        const oldReportActionKeys = _.keys(prevProps.reportActions);
+        const newReportActionKeys = _.keys(this.props.reportActions);
+        debugger;
         const isReportVisible = this.props.reportID === parseInt(this.props.match.params.reportID, 10);
 
         // When the number of actions change, wait three seconds, then record the max action
@@ -120,10 +128,24 @@ class ReportActionsView extends React.Component {
      * scroll the list to the end.
      */
     scrollToListBottom() {
-        if (this.actionListElement) {
+        if (this.actionListElement && this.state.shouldAutoScroll) {
             this.actionListElement.scrollToEnd({animated: false});
         }
         this.recordMaxAction();
+    }
+
+    enableOrDisableAutoScroll(scrollObject) {
+        const totalChatHeight = scrollObject.nativeEvent.contentSize.height;
+        const screenHeight = scrollObject.nativeEvent.layoutMeasurement.height;
+        const topYOffset = scrollObject.nativeEvent.contentOffset.y;
+        const bottomYPosition = topYOffset + screenHeight;
+        if (bottomYPosition === totalChatHeight) {
+            this.setState({shouldAutoScroll: true});
+        } else {
+            if (this.state.shouldAutoScroll) {
+                this.setState({shouldAutoScroll: false});
+            }
+        }
     }
 
     render() {
@@ -141,6 +163,8 @@ class ReportActionsView extends React.Component {
                     this.actionListElement = el;
                 }}
                 onContentSizeChange={this.scrollToListBottom}
+                onScroll={this.enableOrDisableAutoScroll}
+                scrollEventThrottle={1}
                 bounces={false}
                 contentContainerStyle={[styles.chatContentScrollView]}
             >
