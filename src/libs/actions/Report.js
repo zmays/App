@@ -1,7 +1,6 @@
 import moment from 'moment';
 import _ from 'underscore';
 import lodashGet from 'lodash.get';
-import ExpensiMark from 'js-libs/lib/ExpensiMark';
 import Ion from '../Ion';
 import * as API from '../API';
 import IONKEYS from '../../IONKEYS';
@@ -430,8 +429,9 @@ function addAction(reportID, text, file) {
     const actionKey = `${IONKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`;
 
     // Convert the comment from MD into HTML because that's how it is stored in the database
-    const parser = new ExpensiMark();
-    const htmlComment = parser.replace(text);
+    // const parser = new ExpensiMark();
+    // const htmlComment = parser.replace(text);
+    const htmlComment = text;
     const isAttachment = _.isEmpty(text) && file !== undefined;
 
     // The new sequence number will be one higher than the highest
