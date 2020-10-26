@@ -20,7 +20,6 @@
     "lint": "eslint .",
     "postversion": "react-native-version",
     "print-version": "echo $npm_package_version",
-    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
