@@ -20,7 +20,10 @@ jobs:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: Install node packages
-              run: npm ci --verbose
+              run: npm install --verbose
+
+            - name: Echo package-lock diff
+              run: echo $(git diff package-lock.json)
 
             - name: Decrypt Developer ID Certificate
               run: cd desktop && gpg --quiet --batch --yes --decrypt --passphrase="$DEVELOPER_ID_SECRET_PASSPHRASE" --output developer_id.p12 developer_id.p12.gpg
