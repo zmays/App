@@ -1,8 +1,6 @@
 module.exports = {
     appId: 'com.expensifyreactnative.chat',
     productName: 'Chat',
-    // TODO: undo
-    // afterSign: 'desktop/notarize.js',
     mac: {
         category: 'public.app-category.finance',
         icon: './android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png',
@@ -16,12 +14,6 @@ module.exports = {
         artifactName: 'Chat.dmg',
         internetEnabled: true
     },
-    // TODO: undo
-    // publish: [{
-    //     provider: 's3',
-    //     bucket: 'chat-test-expensify-com',
-    //     channel: 'latest'
-    // }],
     files: [
         './dist/**/*',
         './main.js',
