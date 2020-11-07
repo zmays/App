@@ -645,10 +645,12 @@ const styles = {
 
     chatItemCompose: {
         minHeight: 65,
+        maxHeight: 300,
         marginBottom: 5,
         paddingLeft: 20,
         paddingRight: 20,
         display: 'flex',
+        overflow: 'scroll',
     },
 
     chatItemComposeBoxColor: {

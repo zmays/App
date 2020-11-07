@@ -11,6 +11,7 @@ import AttachmentPicker from '../../../libs/AttachmentPicker';
 import withIon from '../../../components/withIon';
 import {addAction, saveReportComment, broadcastUserIsTyping} from '../../../libs/actions/Report';
 import ReportTypingIndicator from './ReportTypingIndicator';
+import emojiIcon from '../../../../assets/images/emoji.png';
 
 const propTypes = {
     // A method to call when the form is submitted
@@ -21,6 +22,8 @@ const propTypes = {
 
     // The ID of the report actions will be created for
     reportID: PropTypes.number.isRequired,
+
+    showHideEmojiPicker: PropTypes.func.isRequired
 };
 
 const defaultProps = {
@@ -42,7 +45,7 @@ class ReportActionCompose extends React.Component {
         this.comment = '';
         this.state = {
             isFocused: false,
-            textInputShouldClear: false
+            textInputShouldClear: false,
         };
     }
 
@@ -179,6 +182,17 @@ class ReportActionCompose extends React.Component {
                         shouldClear={this.state.textInputShouldClear}
                         onClear={() => this.setTextInputShouldClear(false)}
                     />
+                    <TouchableOpacity
+                        style={[styles.chatItemSubmitButton]}
+                        onPress={this.props.showHideEmojiPicker}
+                        underlayColor={colors.componentBG}
+                    >
+                        <Image
+                            resizeMode="contain"
+                            style={[styles.chatItemSubmitButtonIcon]}
+                            source={emojiIcon}
+                        />
+                    </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.chatItemSubmitButton, styles.buttonSuccess]}
                         onPress={this.submitForm}

@@ -77,6 +77,11 @@ module.exports = {
                     },
                 ],
             },
+
+            {
+                test: /@?(react-native-emoji-selector).*\.(ts|js)x?$/,
+                loader: 'babel-loader'
+            },
         ],
     },
     resolve: {
