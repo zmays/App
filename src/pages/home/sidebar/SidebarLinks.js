@@ -12,6 +12,7 @@ import ChatSwitcherView from './ChatSwitcherView';
 import SafeAreaInsetPropTypes from '../../SafeAreaInsetPropTypes';
 import compose from '../../../libs/compose';
 import {withRouter} from '../../../libs/Router';
+import Translate from '../../../components/Translation/Translate';
 
 const propTypes = {
     // These are from withRouter
@@ -77,6 +78,7 @@ const SidebarLinks = (props) => {
                     <Text style={[styles.sidebarListHeader]}>
                         Chats
                     </Text>
+                    <Translate />
                 </View>
                 {/* A report will not have a report name if it hasn't been fetched from the server yet */}
                 {/* so nothing is rendered */}
