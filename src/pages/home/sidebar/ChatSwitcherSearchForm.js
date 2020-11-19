@@ -138,16 +138,16 @@ const ChatSwitcherSearchForm = props => (
             )
             : (
                 <TextInputWithFocusStyles
-                    styleFocusIn={[styles.textInputReversedFocus]}
+                    styleFocusIn={[styles.textInputFocus]}
                     ref={props.forwardedRef}
-                    style={[styles.textInput, styles.textInputReversed, styles.flex1]}
+                    style={[styles.textInput, styles.flex1]}
                     value={props.searchValue}
                     onBlur={props.onBlur}
                     onChangeText={props.onChangeText}
                     onFocus={props.onFocus}
                     onKeyPress={props.onKeyPress}
                     placeholder="Find or start a chat"
-                    placeholderTextColor={colors.icon}
+                    placeholderTextColor={colors.textSupporting}
                 />
             )}
 

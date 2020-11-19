@@ -6,7 +6,7 @@ const safeInsertPercentage = 0.7;
 
 const colors = {
     componentBG: '#FFFFFF',
-    background: '#FAFAFA',
+    background: '#FFFFFF',
     black: '#000000',
     blue: '#2EAAE2',
     border: '#ECECEC',
@@ -15,6 +15,7 @@ const colors = {
     heading: '#37444C',
     icon: '#C6C9CA',
     text: '#4A5960',
+    sidebar: '#FAFAFA',
     textBackground: '#F0F0F0',
     textReversed: '#FFFFFF',
     textSupporting: '#7D8B8F',
@@ -176,6 +177,7 @@ const styles = {
     },
 
     textMicro: {
+        fontFamily: fontFamily.GTA,
         fontSize: 11,
     },
 
@@ -190,6 +192,10 @@ const styles = {
 
     colorReversed: {
         color: colors.textReversed,
+    },
+
+    colorMuted: {
+        color: colors.textSupporting,
     },
 
     colorMutedReversed: {
@@ -356,7 +362,7 @@ const styles = {
     },
 
     genericView: {
-        backgroundColor: colors.heading,
+        backgroundColor: colors.background,
         height: '100%',
     },
 
@@ -375,7 +381,7 @@ const styles = {
 
     // Sidebar Styles
     sidebar: {
-        backgroundColor: colors.heading,
+        backgroundColor: colors.sidebar,
     },
 
     sidebarHeader: {
@@ -412,7 +418,7 @@ const styles = {
     },
 
     statusIndicator: {
-        borderColor: colors.heading,
+        borderColor: colors.sidebar,
         borderRadius: 7,
         borderWidth: 2,
         position: 'absolute',
@@ -432,13 +438,13 @@ const styles = {
     },
 
     sidebarFooterUsername: {
-        color: colors.textReversed,
+        color: colors.heading,
         fontSize: 15,
         fontWeight: '700',
     },
 
     sidebarFooterLink: {
-        color: colors.icon,
+        color: colors.textSupporting,
         fontSize: 11,
         textDecorationLine: 'none',
         fontFamily: fontFamily.GTA,
@@ -451,8 +457,6 @@ const styles = {
         scrollbarWidth: 'none',
         overflow: 'scroll',
         paddingBottom: 4,
-        paddingLeft: 12,
-        paddingRight: 12,
     },
 
     sidebarListHeader: {
@@ -460,9 +464,9 @@ const styles = {
         fontSize: 15,
         fontWeight: '700',
         paddingTop: 8,
-        paddingRight: 8,
+        paddingRight: 20,
         paddingBottom: 8,
-        paddingLeft: 8,
+        paddingLeft: 20,
     },
 
     sidebarListItem: {
@@ -478,33 +482,33 @@ const styles = {
     sidebarLinkInner: {
         alignItems: 'center',
         flexDirection: 'row',
-        height: 44,
-        paddingTop: 10,
-        paddingRight: 8,
-        paddingBottom: 10,
-        paddingLeft: 8,
+        height: 64,
+        paddingTop: 12,
+        paddingRight: 20,
+        paddingBottom: 12,
+        paddingLeft: 20,
     },
 
     sidebarLinkText: {
-        color: colors.icon,
-        fontSize: 13,
+        color: colors.text,
+        fontFamily: fontFamily.GTA,
+        fontSize: 15,
+        lineHeight: 20,
+        height: 20,
         textDecorationLine: 'none',
         overflow: 'hidden',
     },
 
-    sidebarLinkActive: {
-        backgroundColor: colors.text,
-        borderRadius: 8,
-        textDecorationLine: 'none',
-    },
     sidebarLinkTextUnread: {
-        fontWeight: '600',
-        color: colors.textReversed,
+        fontWeight: '700',
+        color: colors.heading,
     },
+
+    sidebarLinkActive: {
+        backgroundColor: colors.border,
+    },
+
     sidebarLinkActiveText: {
-        color: colors.textReversed,
-        fontSize: 13,
-        textDecorationLine: 'none',
         overflow: 'hidden',
     },
 
@@ -525,7 +529,7 @@ const styles = {
     // App Content Wrapper styles for large screens
     // The darker BG color allows the rounded corners to show through
     appContentWrapperLarge: {
-        backgroundColor: colors.heading,
+        backgroundColor: colors.sidebar,
     },
 
     appContent: {
@@ -539,8 +543,6 @@ const styles = {
     },
 
     appContentHeader: {
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
         height: 73,
         justifyContent: 'center',
         display: 'flex',
@@ -564,6 +566,26 @@ const styles = {
     LHNToggleIcon: {
         height: 15,
         width: 18,
+    },
+
+    hamburgerOpenAbsolute: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 2,
+        width: 300,
+        shadowColor: colors.black,
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 20
+    },
+
+    hamburgerOpen: {
+        width: 300,
     },
 
     chatContent: {
@@ -620,7 +642,7 @@ const styles = {
         fontSize: 15,
         height: 24,
         lineHeight: 20,
-        fontWeight: '600',
+        fontWeight: '700',
         paddingRight: 5,
         paddingBottom: 4,
     },
@@ -789,37 +811,17 @@ const styles = {
         paddingRight: 12,
     },
 
-    hamburgerOpenAbsolute: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 2,
-        width: 300,
-        shadowColor: colors.black,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 20
-    },
-
-    hamburgerOpen: {
-        width: 300,
-    },
-
     chatSwitcherAvatar: {
-        backgroundColor: colors.text,
-        borderRadius: 14,
-        height: 28,
+        backgroundColor: colors.icon,
+        borderRadius: 20,
+        height: 40,
         overflow: 'hidden',
-        width: 28,
+        width: 40,
     },
 
     chatSwitcherAvatarImage: {
-        height: 28,
-        width: 28,
+        height: 40,
+        width: 40,
     },
 
     chatSwitcherItemText: {

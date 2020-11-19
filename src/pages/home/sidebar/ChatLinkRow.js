@@ -45,7 +45,7 @@ const ChatLinkRow = ({
         ? styles.sidebarLinkActiveText
         : styles.sidebarLinkText;
     const textUnreadStyle = option.isUnread
-        ? [textStyle, styles.sidebarLinkTextUnread] : [textStyle];
+        ? [styles.sidebarLinkText, styles.sidebarLinkTextUnread] : [styles.sidebarLinkText];
     return (
         <View
             style={[
@@ -78,7 +78,7 @@ const ChatLinkRow = ({
                         {
                             option.icon
                             && (
-                                <View style={[styles.chatSwitcherAvatar, styles.mr2]}>
+                                <View style={[styles.chatSwitcherAvatar, styles.mr3]}>
                                     <Image
                                         source={{uri: option.icon}}
                                         style={[styles.chatSwitcherAvatarImage]}
@@ -96,7 +96,7 @@ const ChatLinkRow = ({
                                     <Text style={textUnreadStyle} numberOfLines={1}>
                                         {option.text}
                                     </Text>
-                                    <Text style={[textStyle, styles.textMicro]} numberOfLines={1}>
+                                    <Text style={[styles.textMicro, styles.colorMuted]} numberOfLines={1}>
                                         {option.alternateText}
                                     </Text>
                                 </>
