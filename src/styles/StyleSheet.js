@@ -299,10 +299,10 @@ const styles = {
 
     // Actions
     actionAvatar: {
-        borderRadius: 20,
+        borderRadius: 12,
         marginRight: 8,
-        height: 40,
-        width: 40,
+        height: 24,
+        width: 24,
     },
 
     textInput: {
@@ -410,10 +410,16 @@ const styles = {
     },
 
     sidebarFooterAvatar: {
-        backgroundColor: colors.text,
+        backgroundColor: colors.icon,
         borderRadius: 20,
         height: 40,
         marginRight: 12,
+        width: 40,
+    },
+
+    sidebarFooterAvatarImage: {
+        borderRadius: 20,
+        height: 40,
         width: 40,
     },
 
@@ -621,7 +627,7 @@ const styles = {
         flexShrink: 1,
         flexBasis: 0,
         position: 'relative',
-        marginLeft: 48,
+        marginLeft: 32,
     },
 
     chatItemRight: {
@@ -635,23 +641,23 @@ const styles = {
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'row',
+        paddingBottom: 4,
     },
 
     chatItemMessageHeaderSender: {
         color: colors.heading,
-        fontSize: 15,
+        fontSize: 13,
         height: 24,
-        lineHeight: 20,
+        lineHeight: 24,
         fontWeight: '700',
         paddingRight: 5,
-        paddingBottom: 4,
     },
 
     chatItemMessageHeaderTimestamp: {
         color: colors.textSupporting,
         fontSize: 11,
         height: 24,
-        lineHeight: 20,
+        lineHeight: 24,
     },
 
     chatItemMessage: {

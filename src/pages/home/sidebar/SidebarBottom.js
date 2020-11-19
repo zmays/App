@@ -55,7 +55,7 @@ const SidebarBottom = ({myPersonalDetails, network, insets}) => {
             <View style={[styles.sidebarFooterAvatar]}>
                 <Image
                     source={{uri: myPersonalDetails.avatarURL}}
-                    style={[styles.actionAvatar]}
+                    style={[styles.sidebarFooterAvatarImage]}
                 />
                 <View style={StyleSheet.flatten(indicatorStyles)} />
             </View>

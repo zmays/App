@@ -42,7 +42,7 @@ const ChatLinkRow = ({
 }) => {
     const isUserRow = option.type === 'user';
     const textStyle = optionIsFocused
-        ? styles.sidebarLinkActiveText
+        ? [styles.sidebarLinkText, styles.sidebarLinkActiveText]
         : styles.sidebarLinkText;
     const textUnreadStyle = option.isUnread
         ? [styles.sidebarLinkText, styles.sidebarLinkTextUnread] : [styles.sidebarLinkText];
@@ -96,7 +96,7 @@ const ChatLinkRow = ({
                                     <Text style={textUnreadStyle} numberOfLines={1}>
                                         {option.text}
                                     </Text>
-                                    <Text style={[styles.textMicro, styles.colorMuted]} numberOfLines={1}>
+                                    <Text style={[textStyle, styles.textMicro, styles.colorMuted]} numberOfLines={1}>
                                         {option.alternateText}
                                     </Text>
                                 </>
