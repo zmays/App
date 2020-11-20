@@ -435,10 +435,10 @@ class ChatSwitcherView extends React.Component {
                 {this.state.groupUsers.length === MAX_GROUP_DM_LENGTH
                     ? (
                         <View style={[styles.chatSwitcherMessage]}>
-                            <Text style={[styles.h4, styles.mb1, styles.colorReversed]}>
+                            <Text style={[styles.h4, styles.mb1]}>
                                 Maximum participants reached
                             </Text>
-                            <Text style={[styles.textLabel, styles.colorMutedReversed]}>
+                            <Text style={[styles.textLabel, styles.colorMuted]}>
                                 {'You\'ve reached the maximum number of participants for a group chat.'}
                             </Text>
                         </View>

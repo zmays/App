@@ -82,6 +82,14 @@ const styles = {
         paddingRight: 8,
     },
 
+    bgYellow: {
+        backgroundColor: 'yellow',
+    },
+
+    bgSalmon: {
+        backgroundColor: 'salmon',
+    },
+
     h100p: {
         height: '100%',
     },
@@ -249,7 +257,7 @@ const styles = {
 
     pill: {
         borderRadius: 14,
-        backgroundColor: colors.text,
+        backgroundColor: colors.border,
         height: 28,
         flexDirection: 'row',
         paddingTop: 6,
@@ -260,7 +268,7 @@ const styles = {
     },
 
     pillText: {
-        color: colors.componentBG,
+        color: colors.text,
         weight: '400',
         fontSize: 11,
         lineHeight: 16,
@@ -386,16 +394,19 @@ const styles = {
 
     sidebarHeader: {
         minHeight: 72,
-        paddingTop: 16,
-        paddingRight: 12,
-        paddingBottom: 16,
-        paddingLeft: 12,
         flex: 1,
     },
 
     sidebarHeaderLogo: {
         height: 40,
         width: 40,
+    },
+
+    sidebarHeaderInner: {
+        paddingTop: 16,
+        paddingRight: 20,
+        paddingBottom: 16,
+        paddingLeft: 20,
     },
 
     sidebarFooter: {
@@ -499,8 +510,8 @@ const styles = {
         color: colors.text,
         fontFamily: fontFamily.GTA,
         fontSize: 15,
-        lineHeight: 20,
-        height: 20,
+        lineHeight: 18,
+        height: 18,
         textDecorationLine: 'none',
         overflow: 'hidden',
     },
@@ -516,6 +527,12 @@ const styles = {
 
     sidebarLinkActiveText: {
         overflow: 'hidden',
+    },
+
+    chatLinkRowPressableLink: {
+        flexGrow: 1,
+        minWidth: 0,
+        textDecorationLine: 'none',
     },
 
     unreadBadge: {
@@ -541,11 +558,6 @@ const styles = {
     appContent: {
         backgroundColor: colors.background,
         overflow: 'hidden',
-    },
-
-    appContentRounded: {
-        borderTopLeftRadius: 12,
-        borderBottomLeftRadius: 12,
     },
 
     appContentHeader: {
@@ -580,7 +592,7 @@ const styles = {
         top: 0,
         bottom: 0,
         zIndex: 2,
-        width: 300,
+        width: 328,
         shadowColor: colors.black,
         shadowOffset: {
             width: 0,
@@ -591,7 +603,7 @@ const styles = {
     },
 
     hamburgerOpen: {
-        width: 300,
+        width: 328,
     },
 
     chatContent: {
@@ -765,9 +777,10 @@ const styles = {
     chatSwitcherGroupDMContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
+        backgroundColor: colors.componentBG,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: colors.textSupporting,
+        borderColor: colors.border,
         paddingTop: 0,
         paddingRight: 3,
         paddingBottom: 0,
@@ -779,7 +792,7 @@ const styles = {
         alignSelf: 'flex-start',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        maxWidth: 190,
+        maxWidth: 203,
         overflow: 'hidden',
     },
 
@@ -788,13 +801,13 @@ const styles = {
     },
 
     chatSwitcherGroupDMTextInput: {
-        backgroundColor: colors.sidebar,
-        color: colors.textReversed,
+        backgroundColor: colors.componentBG,
+        color: colors.text,
         fontFamily: fontFamily.GTA,
         fontSize: 15,
         flexGrow: 1,
         height: 28,
-        width: 186,
+        width: 199,
         marginTop: 5,
         marginBottom: 5,
         marginLeft: 3,
@@ -840,7 +853,7 @@ const styles = {
     },
 
     chatSwitcherItemButton: {
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        backgroundColor: colors.green,
         paddingTop: 6,
         paddingRight: 8,
         paddingBottom: 6,
@@ -851,7 +864,7 @@ const styles = {
     },
 
     chatSwitcherItemButtonText: {
-        color: colors.componentBG,
+        color: colors.textReversed,
         fontFamily: fontFamily.GTA_BOLD,
         fontSize: 11,
         lineHeight: 16,

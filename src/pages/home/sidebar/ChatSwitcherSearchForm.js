@@ -58,9 +58,9 @@ const defaultProps = {
 };
 
 const ChatSwitcherSearchForm = props => (
-    <View style={[styles.flexRow, styles.mb4]}>
+    <View style={[styles.flexRow, styles.sidebarHeaderInner]}>
         {props.isLogoVisible && (
-            <View style={[styles.mr2, styles.ml2]}>
+            <View style={[styles.mr3]}>
                 <Image
                     resizeMode="contain"
                     style={[styles.sidebarHeaderLogo]}
@@ -101,7 +101,7 @@ const ChatSwitcherSearchForm = props => (
                                 <TextInputWithFocusStyles
                                     styleFocusIn={[styles.textInputNoOutline]}
                                     ref={props.forwardedRef}
-                                    style={[styles.chatSwitcherGroupDMTextInput, styles.mb1]}
+                                    style={[styles.chatSwitcherGroupDMTextInput]}
                                     value={props.searchValue}
 
                                     // We don't want to handle this blur event when
