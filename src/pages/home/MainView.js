@@ -18,7 +18,7 @@ const propTypes = {
 
     // List of reports to display
     reports: PropTypes.objectOf(PropTypes.shape({
-        reportID: PropTypes.number,
+        reportID: PropTypes.string,
     })),
 };
 
@@ -28,18 +28,18 @@ const defaultProps = {
 
 class MainView extends Component {
     render() {
-        const reportIDInUrl = parseInt(this.props.match.params.reportID, 10);
+        const reportIDInUrl = this.props.match.params.reportID;
 
         // The styles for each of our reports. Basically, they are all hidden except for the one matching the
         // reportID in the URL
         let activeReportID;
         const reportStyles = _.reduce(this.props.reports, (memo, report) => {
-            const isActiveReport = reportIDInUrl === report.reportID;
+            const isActiveReport = reportIDInUrl === String(report.reportID);
             const finalData = {...memo};
             let reportStyle;
 
             if (isActiveReport) {
-                activeReportID = report.reportID;
+                activeReportID = String(report.reportID);
                 reportStyle = [styles.dFlex, styles.flex1];
             } else {
                 reportStyle = [styles.dNone];
@@ -52,7 +52,7 @@ class MainView extends Component {
         const reportsToDisplay = _.filter(this.props.reports, report => (
             report.isPinned
                 || report.unreadActionCount > 0
-                || report.reportID === reportIDInUrl
+                || String(report.reportID) === reportIDInUrl
         ));
         return (
             <>

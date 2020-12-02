@@ -46,7 +46,7 @@ const propTypes = {
 
     // All reports that have been shared with the user
     reports: PropTypes.shape({
-        reportID: PropTypes.number,
+        reportID: PropTypes.string,
         reportName: PropTypes.string,
     }),
 
@@ -360,7 +360,7 @@ class ChatSwitcherView extends React.Component {
                 text: report.reportName,
                 alternateText: report.reportName,
                 searchText: report.reportName ?? '',
-                reportID: report.reportID,
+                reportID: String(report.reportID),
                 type: OPTION_TYPE.REPORT,
                 participants: report.participants,
                 isUnread: report.unreadActionCount > 0

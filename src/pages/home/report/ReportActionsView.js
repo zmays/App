@@ -16,7 +16,7 @@ import Visibility from '../../../libs/Visibility';
 
 const propTypes = {
     // The ID of the report actions will be created for
-    reportID: PropTypes.number.isRequired,
+    reportID: PropTypes.string.isRequired,
 
     // Is this report currently in view?
     isActiveReport: PropTypes.bool.isRequired,

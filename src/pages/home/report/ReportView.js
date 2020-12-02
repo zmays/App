@@ -9,7 +9,7 @@ import styles from '../../../styles/StyleSheet';
 
 const propTypes = {
     // The ID of the report actions will be created for
-    reportID: PropTypes.number.isRequired,
+    reportID: PropTypes.string.isRequired,
 
     // Whether or not this report is the one that is currently being viewed
     isActiveReport: PropTypes.bool.isRequired,

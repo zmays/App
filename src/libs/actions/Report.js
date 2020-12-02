@@ -38,7 +38,7 @@ Onyx.connect({
 let lastViewedReportID;
 Onyx.connect({
     key: ONYXKEYS.CURRENTLY_VIEWED_REPORTID,
-    callback: val => lastViewedReportID = val ? Number(val) : null,
+    callback: val => lastViewedReportID = val ? String(val) : null,
 });
 
 let myPersonalDetails;
@@ -98,14 +98,14 @@ function getParticipantEmailsFromReport({sharedReportList}) {
  * because space is limited
  *
  * @param {object} report
- * @param {number} report.reportID
+ * @param {string} report.reportID
  * @param {string} report.reportName
  * @param {object} report.reportNameValuePairs
  * @returns {object}
  */
 function getSimplifiedReportObject(report) {
     return {
-        reportID: report.reportID,
+        reportID: String(report.reportID),
         reportName: report.reportName,
         reportNameValuePairs: report.reportNameValuePairs,
         unreadActionCount: getUnreadActionCount(report),
@@ -172,14 +172,14 @@ function fetchChatReportsByIDs(chatList) {
                 PersonalDetails.getForEmails(participantEmails.join(','));
             }
 
-            return _.map(fetchedReports, report => report.reportID);
+            return _.map(fetchedReports, report => String(report.reportID));
         });
 }
 
 /**
  * Update the lastReadActionID in Onyx and local memory.
  *
- * @param {Number} reportID
+ * @param {String} reportID
  * @param {Number} sequenceNumber
  */
 function setLocalLastReadActionID(reportID, sequenceNumber) {
@@ -197,7 +197,7 @@ function setLocalLastReadActionID(reportID, sequenceNumber) {
 /**
  * Updates a report in the store with a new report action
  *
- * @param {number} reportID
+ * @param {string} reportID
  * @param {object} reportAction
  */
 function updateReportWithNewAction(reportID, reportAction) {
@@ -242,7 +242,7 @@ function updateReportWithNewAction(reportID, reportAction) {
     }
 
     // If we are currently viewing this report do not show a notification.
-    if (reportID === lastViewedReportID && Visibility.isVisible()) {
+    if (String(reportID) === lastViewedReportID && Visibility.isVisible()) {
         console.debug('[LOCAL_NOTIFICATION] No notification because it was a comment for the current report');
         return;
     }
@@ -286,11 +286,11 @@ function subscribeToReportCommentEvents() {
     }
 
     Pusher.subscribe(pusherChannelName, 'reportComment', (pushJSON) => {
-        updateReportWithNewAction(pushJSON.reportID, pushJSON.reportAction);
+        updateReportWithNewAction(String(pushJSON.reportID), pushJSON.reportAction);
     });
 
     PushNotification.onReceived(PushNotification.TYPE.REPORT_COMMENT, ({reportID, reportAction}) => {
-        updateReportWithNewAction(reportID, reportAction);
+        updateReportWithNewAction(String(reportID), reportAction);
     });
 
     // Open correct report when push notification is clicked
@@ -303,7 +303,7 @@ function subscribeToReportCommentEvents() {
 /**
  * Initialize our pusher subscriptions to listen for someone typing in a report.
  *
- * @param {number} reportID
+ * @param {string} reportID
  */
 function subscribeToReportTypingEvents(reportID) {
     if (!reportID) {
@@ -341,7 +341,7 @@ function subscribeToReportTypingEvents(reportID) {
 /**
  * Remove our pusher subscriptions to listen for someone typing in a report.
  *
- * @param {number} reportID
+ * @param {string} reportID
  */
 function unsubscribeFromReportChannel(reportID) {
     if (!reportID) {
@@ -371,7 +371,7 @@ function fetchChatReports() {
 /**
  * Get the actions of a report
  *
- * @param {number} reportID
+ * @param {string} reportID
  */
 function fetchActions(reportID) {
     API.Report_GetHistory({reportID})
@@ -433,7 +433,7 @@ function fetchOrCreateChatReport(participants) {
 
         .then((data) => {
             // Set aside the reportID in a local variable so it can be accessed in the rest of the chain
-            reportID = data.reportID;
+            reportID = String(data.reportID);
 
             // Make a request to get all the information about the report
             return API.Get({
@@ -517,7 +517,7 @@ function addAction(reportID, text, file) {
     });
 
     API.Report_AddComment({
-        reportID,
+        String(reportID),
         reportComment: htmlComment,
         file
     });
@@ -541,7 +541,7 @@ function updateLastReadActionID(reportID, sequenceNumber) {
     // Mark the report as not having any unread items
     API.Report_SetLastReadActionID({
         accountID: currentUserAccountID,
-        reportID,
+        reportID: String(reportID),
         sequenceNumber,
     });
 }
@@ -555,7 +555,7 @@ function togglePinnedState(report) {
     const pinnedValue = !report.isPinned;
     Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${report.reportID}`, {isPinned: pinnedValue});
     API.Report_TogglePinned({
-        reportID: report.reportID,
+        reportID: String(report.reportID),
         pinnedValue,
     });
 }

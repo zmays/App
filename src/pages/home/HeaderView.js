@@ -26,7 +26,7 @@ const propTypes = {
         reportName: PropTypes.string,
 
         // ID of the report
-        reportID: PropTypes.number,
+        reportID: PropTypes.string,
 
         // Value indicating if the report is pinned or not
         isPinned: PropTypes.bool,

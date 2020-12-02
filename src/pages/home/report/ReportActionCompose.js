@@ -9,7 +9,7 @@ import sendIcon from '../../../../assets/images/icon-send.png';
 import ONYXKEYS from '../../../ONYXKEYS';
 import paperClipIcon from '../../../../assets/images/icon-paper-clip.png';
 import AttachmentPicker from '../../../components/AttachmentPicker';
-import {addAction, saveReportComment, broadcastUserIsTyping} from '../../../libs/actions/Report';
+import {addAction, saveReportComment, enumberroadcastUserIsTyping} from '../../../libs/actions/Report';
 import ReportTypingIndicator from './ReportTypingIndicator';
 
 const propTypes = {
@@ -20,7 +20,7 @@ const propTypes = {
     comment: PropTypes.string,
 
     // The ID of the report actions will be created for
-    reportID: PropTypes.number.isRequired,
+    reportID: PropTypes.string.isRequired,
 };
 
 const defaultProps = {

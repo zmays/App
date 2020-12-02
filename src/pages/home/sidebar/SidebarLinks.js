@@ -29,7 +29,7 @@ const propTypes = {
 
     // List of reports
     reports: PropTypes.objectOf(PropTypes.shape({
-        reportID: PropTypes.number,
+        reportID: PropTypes.string,
         reportName: PropTypes.string,
         unreadActionCount: PropTypes.number,
     })),
@@ -56,7 +56,7 @@ const defaultProps = {
 
 
 const SidebarLinks = (props) => {
-    const reportIDInUrl = parseInt(props.match.params.reportID, 10);
+    const reportIDInUrl = props.match.params.reportID;
     const sortedReports = lodashOrderby(props.reports, [
         'isPinned',
         'reportName'
@@ -79,8 +79,8 @@ const SidebarLinks = (props) => {
     // Filter the reports so that the only reports shown are pinned, unread, have draft
     // comments (but are not the open one), and the one matching the URL
     const reportsToDisplay = _.filter(sortedReports, report => (report.isPinned || (report.unreadActionCount > 0)
-            || report.reportID === reportIDInUrl
-            || (report.reportID !== reportIDInUrl && hasComment(report.reportID))));
+            || String(report.reportID) === reportIDInUrl
+            || (String(report.reportID) !== reportIDInUrl && hasComment(report.reportID))));
 
     // Update styles to hide the report links if they should not be visible
     const sidebarLinksStyle = !props.isChatSwitcherActive
@@ -120,12 +120,12 @@ const SidebarLinks = (props) => {
                                 type: participantDetails ? 'user' : 'report',
                                 icon: participantDetails ? participantDetails.avatarURL : '',
                                 login: participantDetails ? participantDetails.login : '',
-                                reportID: report.reportID,
+                                reportID: String(report.reportID),
                                 isUnread: report.unreadActionCount > 0,
-                                hasDraftComment: report.reportID !== reportIDInUrl && hasComment(report.reportID)
+                                hasDraftComment: String(report.reportID) !== reportIDInUrl && hasComment(report.reportID)
                             }}
                             onSelectRow={props.onLinkClick}
-                            optionIsFocused={report.reportID === reportIDInUrl}
+                            optionIsFocused={String(report.reportID) === reportIDInUrl}
                         />
                     );
                 })}
