@@ -10,9 +10,8 @@ const Modal = props => {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     };
+
     const shadowStyles = {
-        paddingLeft: 20,
-        paddingRight: 20,
         shadowColor: colors.black,
         shadowOffset: {
             width: 0,
@@ -29,7 +28,22 @@ const Modal = props => {
     let animationOut;
     let needsSafeAreaPadding = false;
 
-    switch (props.modalType) {
+    switch (props.type) {
+        case 'centered':
+            modalStyle = {
+                alignItems: 'center',
+            };
+            modalContainerStyle = {
+                ...shadowStyles,
+                borderBottomLeftRadius: 20,
+                width: '95vw',
+                height: '95vh',
+            };
+            swipeDirection = 'down';
+            animationIn = 'fadeIn';
+            animationOut = 'fadeOut';
+            needsSafeAreaPadding = true;
+            break;
         case 'rightDocked':
             modalStyle = {
                 alignItems: 'flex-end',
@@ -115,7 +129,6 @@ const Modal = props => {
                     return (
                         <View
                             style={{
-                                backgroundColor: '#ffffff',
                                 paddingBottom,
                                 ...modalContainerStyle,
                                 paddingTop: needsSafeAreaPadding ? paddingTop : 20,

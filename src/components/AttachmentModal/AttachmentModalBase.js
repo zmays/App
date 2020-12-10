@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Modal from 'react-native-modal';
+import CenteredModal from '../Modals/CenteredModal';
 import PropTypes from 'prop-types';
 import {
     View, Dimensions, TouchableOpacity, Text,
@@ -7,7 +7,6 @@ import {
 import {withOnyx} from 'react-native-onyx';
 import AttachmentView from '../AttachmentView';
 import styles, {colors} from '../../styles/StyleSheet';
-import ModalView from '../ModalView';
 import ModalHeader from '../ModalHeader';
 import ONYXKEYS from '../../ONYXKEYS';
 import addAuthTokenToURL from '../../libs/addAuthTokenToURL';
@@ -104,18 +103,11 @@ class AttachmentModalBase extends Component {
 
         return (
             <>
-                <Modal
-                    onRequestClose={() => this.setState({isModalOpen: false})}
-                    visible={this.state.isModalOpen}
-                    transparent
-                    style={styles.m0}
+                <CenteredModal
+                    onClose={() => this.setState({isModalOpen: false})}
+                    isVisible={this.state.isModalOpen}
                 >
-                    <ModalView
-                        pinToEdges={this.props.pinToEdges}
-                        modalWidth={this.modalWidth}
-                        modalHeight={this.modalHeight}
-                        onCloseButtonPress={() => this.setState({isModalOpen: false})}
-                    >
+                    <View style={styles.modalViewContainer}>
                         <ModalHeader
                             title={this.props.title}
                             onCloseButtonPress={() => this.setState({isModalOpen: false})}
@@ -152,8 +144,8 @@ class AttachmentModalBase extends Component {
                                 </Text>
                             </TouchableOpacity>
                         )}
-                    </ModalView>
-                </Modal>
+                    </View>
+                </CenteredModal>
                 {this.props.children({
                     displayFileInModal: ({file}) => {
                         if (file instanceof File) {

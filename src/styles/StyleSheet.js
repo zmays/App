@@ -901,10 +901,7 @@ const styles = {
 
     modalViewContainer: {
         backgroundColor: colors.componentBG,
-        borderColor: colors.border,
-        borderWidth: 1,
-        borderRadius: 20,
-        height: '100%',
+        flex: 1,
         alignItems: 'center',
         overflow: 'hidden',
     },
