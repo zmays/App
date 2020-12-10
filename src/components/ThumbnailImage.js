@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {View} from 'react-native';
 import PropTypes from 'prop-types';
 import {withOnyx} from 'react-native-onyx';
 import ONYXKEYS from '../ONYXKEYS';
@@ -55,13 +56,23 @@ class ThumbnailImage extends Component {
         });
 
         return (
-            <ImageWithSizeCalculation
-                style={this.props.style}
-                width={this.state.thumbnailWidth}
-                height={this.state.thumbnailHeight}
-                url={url}
-                onMeasure={this.updateImageSize}
-            />
+            <View
+                style={{
+                    width: this.state.thumbnailWidth,
+                    height: this.state.thumbnailHeight,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    backgroundSize: '100% 100%',
+                }}
+            >
+
+                <ImageWithSizeCalculation
+                    style={this.props.style}
+                    url={url}
+                    onMeasure={this.updateImageSize}
+                />
+            </View>
         );
     }
 }

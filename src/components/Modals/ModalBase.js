@@ -35,7 +35,8 @@ const Modal = props => {
             };
             modalContainerStyle = {
                 ...shadowStyles,
-                borderBottomLeftRadius: 20,
+                borderRadius: 20,
+                overflow: 'hidden',
                 width: '95vw',
                 height: '95vh',
             };

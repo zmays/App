@@ -903,7 +903,6 @@ const styles = {
         backgroundColor: colors.componentBG,
         flex: 1,
         alignItems: 'center',
-        overflow: 'hidden',
     },
 
     modalHeaderBar: {
@@ -934,10 +933,8 @@ const styles = {
 
     imageModalImageCenterContainer: {
         flex: 1,
-        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden',
         width: '100%',
     },
 

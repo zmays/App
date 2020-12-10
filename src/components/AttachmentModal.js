@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
-import CenteredModal from '../Modals/CenteredModal';
+import CenteredModal from './Modals/CenteredModal';
 import PropTypes from 'prop-types';
 import {
-    View, Dimensions, TouchableOpacity, Text,
+    View, TouchableOpacity, Text,
 } from 'react-native';
 import {withOnyx} from 'react-native-onyx';
-import AttachmentView from '../AttachmentView';
-import styles, {colors} from '../../styles/StyleSheet';
-import ModalHeader from '../ModalHeader';
-import ONYXKEYS from '../../ONYXKEYS';
-import addAuthTokenToURL from '../../libs/addAuthTokenToURL';
+import AttachmentView from './AttachmentView';
+import styles, {colors} from '../styles/StyleSheet';
+import ModalHeader from './ModalHeader';
+import ONYXKEYS from '../ONYXKEYS';
+import addAuthTokenToURL from '../libs/addAuthTokenToURL';
 
 /**
  * Modal render prop component that exposes modal launching triggers that can be used
@@ -17,9 +17,6 @@ import addAuthTokenToURL from '../../libs/addAuthTokenToURL';
  */
 
 const propTypes = {
-    // Should modal go full screen
-    pinToEdges: PropTypes.bool,
-
     // Title of the modal header
     title: PropTypes.string,
 
@@ -43,55 +40,20 @@ const propTypes = {
 };
 
 const defaultProps = {
-    pinToEdges: false,
     title: '',
     sourceURL: null,
     onConfirm: null,
 };
 
-class AttachmentModalBase extends Component {
+class AttachmentModal extends Component {
     constructor(props) {
         super(props);
 
-        this.updateImageDimensions = this.updateImageDimensions.bind(this);
-
-        // If pinToEdges is false, the default modal width and height will take up about 80% of the screen
-        this.modalWidth = Dimensions.get('window').width * 0.8;
-        this.modalHeight = Dimensions.get('window').height * 0.8;
-
-        // The image inside the modal shouldn't span the entire width of the modal
-        // unless it is full screen so the default is 20% smaller than the width of the modal
-        this.modalImageWidth = Dimensions.get('window').width * 0.6;
-
         this.state = {
             isModalOpen: false,
-            imageWidth: 300,
-            imageHeight: 300,
             file: null,
             sourceURL: props.sourceURL,
         };
-    }
-
-    /**
-     * Update image dimensions once the size is fetched
-     */
-    updateImageDimensions({width, height}) {
-        // Unlike the image width, we do allow the image to span the full modal height
-        const modalHeight = this.props.pinToEdges
-            ? Dimensions.get('window').height
-            : this.modalHeight - (styles.modalHeaderBar.height || 0);
-        const modalWidth = this.props.pinToEdges ? Dimensions.get('window').width : this.modalImageWidth;
-        let imageHeight = height;
-        let imageWidth = width;
-
-        // Resize image to fit within the modal, if necessary
-        if (width > modalWidth || height > modalHeight) {
-            const scaleFactor = Math.max(width / modalWidth, height / modalHeight);
-            imageHeight = height / scaleFactor;
-            imageWidth = width / scaleFactor;
-        }
-
-        this.setState({imageWidth, imageHeight});
     }
 
     render() {
@@ -114,15 +76,10 @@ class AttachmentModalBase extends Component {
                         />
                         <View style={styles.imageModalImageCenterContainer}>
                             {this.state.sourceURL && (
-                                <AttachmentView
-                                    sourceURL={sourceURL}
-                                    height={this.state.imageHeight}
-                                    width={this.state.imageWidth}
-                                    onImagePrefetched={this.updateImageDimensions}
-                                    file={this.state.file}
-                                />
+                                <AttachmentView sourceURL={sourceURL} />
                             )}
                         </View>
+
                         {/* If we have an onConfirm method show a confirmation button */}
                         {this.props.onConfirm && (
                             <TouchableOpacity
@@ -164,10 +121,10 @@ class AttachmentModalBase extends Component {
     }
 }
 
-AttachmentModalBase.propTypes = propTypes;
-AttachmentModalBase.defaultProps = defaultProps;
+AttachmentModal.propTypes = propTypes;
+AttachmentModal.defaultProps = defaultProps;
 export default withOnyx({
     session: {
         key: ONYXKEYS.SESSION,
     },
-})(AttachmentModalBase);
+})(AttachmentModal);

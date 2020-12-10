@@ -6,15 +6,6 @@ import ImageWithSizeCalculation from '../ImageWithSizeCalculation';
 const propTypes = {
     // URL to full-sized image
     url: PropTypes.string,
-
-    // Image height
-    height: PropTypes.number,
-
-    // Image width
-    width: PropTypes.number,
-
-    // Callback to fire when image is measured
-    onMeasure: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
@@ -24,12 +15,10 @@ const defaultProps = {
 };
 
 const ImageView = props => (
-    <View>
+    <View style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundSize: '100% 100%'}}>
         <ImageWithSizeCalculation
             onMeasure={props.onMeasure}
             url={props.url}
-            width={props.width}
-            height={props.height}
         />
     </View>
 );
