@@ -1,11 +1,16 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import ReactNativeModal from 'react-native-modal';
 import CustomStatusBar from '../CustomStatusBar';
 import {getSafeAreaPadding, colors} from '../../styles/StyleSheet';
 import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 
+const WIDTH_BREAKPOINT = 1000;
+
 const Modal = props => {
+    const windowDimensions = useWindowDimensions();
+    const isSmallScreen = windowDimensions.width < WIDTH_BREAKPOINT;
+
     const borderRadiusStyles = {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
@@ -30,16 +35,20 @@ const Modal = props => {
 
     switch (props.type) {
         case 'centered':
+            const marginVertical = windowDimensions.height * 0.025;
             modalStyle = {
                 alignItems: 'center',
             };
             modalContainerStyle = {
                 ...shadowStyles,
-                borderRadius: 20,
+                flex: 1,
+                marginTop: isSmallScreen ? 0 : marginVertical,
+                marginBottom: isSmallScreen ? 0 : marginVertical,
+                borderRadius: isSmallScreen ? 0 : 20,
                 overflow: 'hidden',
-                width: '95vw',
-                height: '95vh',
+                width: isSmallScreen ? '100%' : '95%',
             };
+
             swipeDirection = 'down';
             animationIn = 'fadeIn';
             animationOut = 'fadeOut';

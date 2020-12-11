@@ -1,30 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View} from 'react-native';
-import ImageWithSizeCalculation from '../ImageWithSizeCalculation';
+import {View, Image} from 'react-native';
+import ZoomContainer from './ZoomContainer';
 
 const propTypes = {
     // URL to full-sized image
-    url: PropTypes.string,
+    url: PropTypes.string.isRequired,
 };
 
-const defaultProps = {
-    url: '',
-    height: 300,
-    width: 300,
-};
-
-const ImageView = props => (
-    <View style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundSize: '100% 100%'}}>
-        <ImageWithSizeCalculation
-            onMeasure={props.onMeasure}
-            url={props.url}
-        />
-    </View>
-);
+const ImageView = props => {
+    return (
+        <ZoomContainer url={props.url} />
+    );
+}
 
 ImageView.propTypes = propTypes;
-ImageView.defaultProps = defaultProps;
 ImageView.displayName = 'ImageView';
 
 export default ImageView;

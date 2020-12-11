@@ -54,7 +54,6 @@ class ThumbnailImage extends Component {
             authToken: this.props.session.authToken,
             required: this.props.isAuthTokenRequired,
         });
-
         return (
             <View
                 style={{
@@ -63,10 +62,8 @@ class ThumbnailImage extends Component {
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflow: 'hidden',
-                    backgroundSize: '100% 100%',
                 }}
             >
-
                 <ImageWithSizeCalculation
                     style={this.props.style}
                     url={url}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image} from 'react-native';
+import {Image, Animated} from 'react-native';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -66,14 +66,14 @@ class ImageWithSizeCalculation extends Component {
 
     render() {
         return (
-            <Image
+            <Animated.Image
                 style={{
                     ...this.props.style,
                     width: '100%',
                     height: '100%',
                 }}
                 source={{uri: this.props.url}}
-                resizeMode="center"
+                resizeMode="cover"
             />
         );
     }

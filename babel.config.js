@@ -1,4 +1,4 @@
-const defaultPresets = ['@babel/preset-react', '@babel/preset-env'];
+const defaultPresets = ['@babel/preset-react', '@babel/preset-env', '@babel/preset-flow'];
 const defaultPlugins = [
     ['react-native-web', {commonjs: true}],
     '@babel/transform-runtime',

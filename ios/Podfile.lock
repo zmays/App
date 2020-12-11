@@ -417,6 +417,8 @@ PODS:
     - Firebase/Crashlytics (~> 6.34.0)
     - React-Core
     - RNFBApp
+  - RNGestureHandler (1.9.0):
+    - React-Core
   - urbanairship-react-native (9.0.1):
     - Airship (= 14.0.1)
     - React
@@ -486,6 +488,7 @@ DEPENDENCIES:
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - urbanairship-react-native (from `../node_modules/urbanairship-react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -597,6 +600,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   urbanairship-react-native:
     :path: "../node_modules/urbanairship-react-native"
   Yoga:
@@ -666,10 +671,11 @@ SPEC CHECKSUMS:
   RNFBAnalytics: 2dc4dd9e2445faffca041b10447a23a71dcdabf8
   RNFBApp: 7eacc7da7ab19f96c05e434017d44a9f09410da8
   RNFBCrashlytics: 4870c14cf8833053b6b5648911abefe1923854d2
+  RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   urbanairship-react-native: b948f8d55fff0013e595ebbe84804e46d18c745b
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: d03a22d8299d9564ca7fc55d0a779f6fbf0d2b37
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.0

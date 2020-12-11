@@ -4,6 +4,7 @@ import {View, Dimensions} from 'react-native';
 import ImgZoom from 'react-native-image-pan-zoom';
 import ImageWithSizeCalculation from '../ImageWithSizeCalculation';
 import {variables} from '../../styles/StyleSheet';
+import ZoomContainer from './ZoomContainer';
 
 /**
  * On the native layer, we use a image library to handle zoom functionality
@@ -29,28 +30,39 @@ const defaultProps = {
     onMeasure: () => {},
 };
 
-const ImageView = (props) => {
-    // Default windowHeight accounts for the modal header height
-    const windowHeight = Dimensions.get('window').height - variables.modalHeaderBarHeight;
-    const windowWidth = Dimensions.get('window').width;
+class ImageView extends React.Component {
+    constructor(props) {
+        super(props);
 
-    return (
-        <View>
-            <ImgZoom
-                cropWidth={windowWidth}
-                cropHeight={windowHeight}
-                imageWidth={props.width}
-                imageHeight={props.height}
-            >
-                <ImageWithSizeCalculation
-                    style={{width: props.width, height: props.height}}
-                    url={props.url}
-                    onMeasure={props.onMeasure}
-                />
-            </ImgZoom>
-        </View>
-    );
-};
+        this.state = {
+            imageHeight: 100,
+            imageWidth: 100,
+        };
+    }
+
+    render() {
+        // Default windowHeight accounts for the modal header height
+        const windowHeight = Dimensions.get('window').height - variables.modalHeaderBarHeight;
+        const windowWidth = Dimensions.get('window').width;
+
+        return (
+            <ZoomContainer url={this.props.url} />
+            // <View style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
+            //     <ImgZoom
+            //         cropWidth={windowWidth}
+            //         cropHeight={windowHeight}
+            //         imageWidth={this.state.imageWidth}
+            //         imageHeight={this.state.imageHeight}
+            //     >
+            //         <ImageWithSizeCalculation
+            //             url={this.props.url}
+            //             onMeasure={({width, height}) => this.setState({imageHeight: height, imageWidth: width})}
+            //         />
+            //     </ImgZoom>
+            // </View>
+        );
+    }
+}
 
 ImageView.propTypes = propTypes;
 ImageView.defaultProps = defaultProps;
