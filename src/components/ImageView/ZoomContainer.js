@@ -44,7 +44,7 @@ class ZoomContainer extends React.Component {
             let baseScale = 1;
 
             if (windowWidth < width) {
-                baseScale = windowWidth / width;
+                baseScale = (windowWidth - 100) / width;
             }
 
             this.lastScale = baseScale;
