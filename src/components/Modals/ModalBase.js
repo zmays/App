@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, useWindowDimensions} from 'react-native';
 import ReactNativeModal from 'react-native-modal';
+import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 import CustomStatusBar from '../CustomStatusBar';
 import {getSafeAreaPadding, colors} from '../../styles/StyleSheet';
-import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 
 const WIDTH_BREAKPOINT = 1000;
 
@@ -49,7 +49,7 @@ const Modal = props => {
                 width: isSmallScreen ? '100%' : '95%',
             };
 
-            swipeDirection = 'down';
+            swipeDirection = undefined;
             animationIn = 'fadeIn';
             animationOut = 'fadeOut';
             needsSafeAreaPadding = true;

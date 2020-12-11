@@ -1,59 +1,55 @@
 import React from 'react';
-import {Animated, Dimensions, View, Image, ActivityIndicator, PanResponder, TouchableWithoutFeedback} from 'react-native';
-import {PinchGestureHandler, State} from 'react-native-gesture-handler';
+import {Animated, Dimensions, View, Image, ActivityIndicator} from 'react-native';
+import {PinchGestureHandler, PanGestureHandler, State} from 'react-native-gesture-handler';
 
 class ZoomContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.pinchScale = new Animated.Value(1);
+
         this.baseScale = new Animated.Value(1);
+        this.pinchScale = new Animated.Value(1);
         this.scale = Animated.multiply(this.baseScale, this.pinchScale);
         this.lastScale = 1;
 
         this.onPinch = Animated.event(
-            [
-                {nativeEvent: {scale: this.pinchScale}},
-            ],
-            {
-                useNativeDriver: false,
-            }
+            [{
+                nativeEvent: {scale: this.pinchScale},
+            }],
+            {useNativeDriver: false}
         );
 
-        this.windowWidth = Dimensions.get('window').width;
-        this.windowHeight = Dimensions.get('window').height;
-
-        this.pan = new Animated.ValueXY();
-        this.panResponder = PanResponder.create({
-            onMoveShouldSetPanResponder: () => true,
-            onPanResponderGrant: () => {
-                this.pan.setOffset({
-                    x: this.pan.x._value,
-                    y: this.pan.y._value
-                });
-            },
-            onPanResponderMove: Animated.event([
-                null,
-                {dx: this.pan.x, dy: this.pan.y}
-            ],
-            {
-                useNativeDriver: false,
-            }),
-            onPanResponderRelease: () => {
-                this.pan.flattenOffset();
-            },
-        });
+        this.translateX = new Animated.Value(0);
+        this.translateY = new Animated.Value(0);
+        this.lastOffset = {x: 0, y: 0};
+        this.onPanGestureEvent = Animated.event(
+            [{
+                nativeEvent: {
+                    translationX: this.translateX,
+                    translationY: this.translateY,
+                },
+            }],
+            {useNativeDriver: false}
+        );
 
         this.state = {
-            didImageLoad: true,
+            didImageLoad: false,
             imageHeight: null,
             imageWidth: null,
         };
-
-        this.imageFetched = false;
     }
 
     componentDidMount() {
         Image.getSize(this.props.url, (width, height) => {
+            const windowWidth = Dimensions.get('window').width;
+            let baseScale = 1;
+
+            if (windowWidth < width) {
+                baseScale = windowWidth / width;
+            }
+
+            this.lastScale = baseScale;
+            this.baseScale.setValue(baseScale);
+
             this.setState({
                 didImageLoad: true,
                 imageHeight: height,
@@ -73,14 +69,26 @@ class ZoomContainer extends React.Component {
     render() {
         if (!this.state.didImageLoad) {
             return (
-                <View>
-                    <ActivityIndicator />
+                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    <ActivityIndicator size="large" color="#000000" />
                 </View>
             );
         }
 
         return (
-            <TouchableWithoutFeedback>
+            <PanGestureHandler
+                onGestureEvent={this.onPanGestureEvent}
+                onHandlerStateChange={(event) => {
+                    if (event.nativeEvent.oldState === State.ACTIVE) {
+                        this.lastOffset.x += event.nativeEvent.translationX;
+                        this.lastOffset.y += event.nativeEvent.translationY;
+                        this.translateX.setOffset(this.lastOffset.x);
+                        this.translateX.setValue(0);
+                        this.translateY.setOffset(this.lastOffset.y);
+                        this.translateY.setValue(0);
+                    }
+                }}
+            >
                 <PinchGestureHandler
                     onGestureEvent={this.onPinch}
                     onHandlerStateChange={(event) => {
@@ -111,15 +119,14 @@ class ZoomContainer extends React.Component {
                                 height: this.state.imageHeight,
                                 transform: [
                                     {scale: this.scale},
-                                    {translateX: this.pan.x},
-                                    {translateY: this.pan.y},
+                                    {translateX: this.translateX},
+                                    {translateY: this.translateY},
                                 ],
                             }}
-                            {...this.panResponder.panHandlers}
                         />
                     </Animated.View>
                 </PinchGestureHandler>
-            </TouchableWithoutFeedback>
+            </PanGestureHandler>
         );
     }
 }
