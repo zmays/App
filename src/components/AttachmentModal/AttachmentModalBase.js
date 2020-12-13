@@ -69,6 +69,7 @@ class AttachmentModalBase extends Component {
 
         this.state = {
             isModalOpen: false,
+            isLoading: false,
             imageWidth: 300,
             imageHeight: 300,
             file: null,
@@ -168,7 +169,7 @@ class AttachmentModalBase extends Component {
                             )}
                         </View>
                         {/* If we have an onConfirm method show a confirmation button */}
-                        {this.props.onConfirm && (
+                        {this.props.onConfirm && !this.state.isLoading && (
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonSuccess, styles.buttonConfirm]}
                                 underlayColor={colors.componentBG}
@@ -192,15 +193,15 @@ class AttachmentModalBase extends Component {
                 </Modal>
                 {this.props.children({
                     displayFileInModal: ({file}) => {
-                        this.setState({isModalOpen: true});
+                        this.setState({isModalOpen: true, isLoading: true});
 
                         this.convertFromHeic(file)
                         .then(file => {
                             if (file instanceof File) {
                                 const source = URL.createObjectURL(file);
-                                this.setState({sourceURL: source, file});
+                                this.setState({isLoading: false, sourceURL: source, file});
                             } else {
-                                this.setState({sourceURL: file.uri, file});
+                                this.setState({isLoading: false, sourceURL: file.uri, file});
                             }
                         })
                     },
