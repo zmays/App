@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
 import {
-    View, Dimensions, TouchableOpacity, Text,
+    View, Dimensions, TouchableOpacity, Text, ActivityIndicator
 } from 'react-native';
 import {withOnyx} from 'react-native-onyx';
 import AttachmentView from '../AttachmentView';
@@ -158,6 +158,12 @@ class AttachmentModalBase extends Component {
                             onCloseButtonPress={() => this.setState({isModalOpen: false})}
                         />
                         <View style={styles.imageModalImageCenterContainer}>
+                            {this.state.isLoading && (
+                                <ActivityIndicator
+                                    size="large"
+                                    color={colors.textSupporting}
+                                />
+                            )}
                             {this.state.sourceURL && (
                                 <AttachmentView
                                     sourceURL={sourceURL}
@@ -168,7 +174,7 @@ class AttachmentModalBase extends Component {
                                 />
                             )}
                         </View>
-                        {/* If we have an onConfirm method show a confirmation button */}
+                        {/* If we have an onConfirm method and file is done loading, show a confirmation button */}
                         {this.props.onConfirm && !this.state.isLoading && (
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonSuccess, styles.buttonConfirm]}
@@ -193,7 +199,7 @@ class AttachmentModalBase extends Component {
                 </Modal>
                 {this.props.children({
                     displayFileInModal: ({file}) => {
-                        this.setState({isModalOpen: true, isLoading: true});
+                        this.setState({isModalOpen: true, isLoading: true, sourceURL: null, file: null});
 
                         this.convertFromHeic(file)
                         .then(file => {
