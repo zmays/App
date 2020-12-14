@@ -99,29 +99,23 @@ class AttachmentModalBase extends Component {
         this.setState({imageWidth, imageHeight});
     }
 
-    // converts file from heic to jpeg if necessary
-    async convertFromHeic(file) {
+    /**
+     * Converts file jpeg if it is type heic
+     */
+    async convertIfHeic(file) {
         if (file.type !== 'image/heic') {
-            console.log('not heic');
             return file;
         }
 
-        console.log(file);
-
-        let response = await fetch(file.uri);
-        let blob = await response.blob();
-        let conversionResult = await heic2any({
+        const response = await fetch(file.uri);
+        const blob = await response.blob();
+        const conversionResult = await heic2any({
                 blob,
                 toType: 'image/jpeg',
         });
-        console.log(conversionResult);
-        let returnFile = new File([conversionResult], "sample.jpeg", {type: 'image/jpeg'});
-        // const url = URL.createObjectURL(conversionResult);
-        // const returnFile = {
-        //     name: 'sample.jpeg',
-        //     type: 'image/jpeg',
-        //     uri: url,
-        // }
+
+        const filename = file.name.replace(/(\.heic)$/i, '.jpeg');
+        const returnFile = new File([conversionResult], filename, {type: 'image/jpeg'});
         
         console.log(returnFile);
         return returnFile;
@@ -201,7 +195,7 @@ class AttachmentModalBase extends Component {
                     displayFileInModal: ({file}) => {
                         this.setState({isModalOpen: true, isLoading: true, sourceURL: null, file: null});
 
-                        this.convertFromHeic(file)
+                        this.convertIfHeic(file)
                         .then(file => {
                             if (file instanceof File) {
                                 const source = URL.createObjectURL(file);
