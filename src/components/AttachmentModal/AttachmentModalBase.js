@@ -100,30 +100,31 @@ class AttachmentModalBase extends Component {
     }
 
     /**
-     * Converts file jpeg if it is type heic
+     * Converts file to jpeg if it is type HEIC 
      */
     async convertIfHeic(file) {
+        // If it's not an HEIC image, just return the file as-is
         if (file.type !== 'image/heic') {
             return file;
         }
 
-        const response = await fetch(file.uri);
-        const blob = await response.blob();
-        const conversionResult = await heic2any({
-                blob,
-                toType: 'image/jpeg',
-        });
-
-        const filename = file.name.replace(/(\.heic)$/i, '.jpeg');
-        const returnFile = new File([conversionResult], filename, {type: 'image/jpeg'});
-        
-        console.log(returnFile);
-        return returnFile;
-        // .catch((e) => {
-        //         // see error handling section
-        //     console.log(e);             
-        //     return file;
-        // });
+        try {
+            // Approach outlined in heic2any library docs 
+            // https://alexcorvi.github.io/heic2any/#using-the-library
+            const response = await fetch(file.uri);
+            const blob = await response.blob();
+            const conversionResult = await heic2any({
+                    blob,
+                    toType: 'image/jpeg',
+            });
+            const filename = file.name.replace(/(\.heic)$/i, '.jpeg');
+            const convertedFile = new File([conversionResult], filename, {type: 'image/jpeg'});
+            return convertedFile;
+        } catch (error) {
+            // If there's an error while converting, log it and just return the original file
+            console.log(error);
+            return file;
+        }
     }
 
     render() {
