@@ -46,6 +46,9 @@ class ReportActionsView extends React.Component {
         this.scrollToListBottom = this.scrollToListBottom.bind(this);
         this.recordMaxAction = this.recordMaxAction.bind(this);
         this.sortedReportActions = this.updateSortedReportActions();
+        this.throttledFetchActions = _.throttle((offset) => {
+            fetchActions(this.props.reportID, offset);
+        }, 500, {trailing: false});
 
         this.state = {
             refetchNeeded: true,
@@ -80,7 +83,7 @@ class ReportActionsView extends React.Component {
             // leave the user positioned where they are now in the list.
             const lastAction = lastItem(this.props.reportActions);
             if (lastAction && (lastAction.actorEmail === this.props.session.email)) {
-                this.scrollToListBottom();
+                // this.scrollToListBottom();
             }
 
             // When the number of actions change, wait three seconds, then record the max action
@@ -246,7 +249,8 @@ class ReportActionsView extends React.Component {
                 keyExtractor={item => `${item.action.sequenceNumber}`}
                 initialRowHeight={32}
                 onEndReached={() => {
-                    console.log('[marcaaron] Reached end of FlatList');
+                    const leastRecentActionID = _.last(this.sortedReportActions).action.sequenceNumber;
+                    this.throttledFetchActions(leastRecentActionID);
                 }}
                 onEndReachedThreshold={0.1}
             />

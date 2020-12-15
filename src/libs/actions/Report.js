@@ -377,11 +377,20 @@ function fetchChatReports() {
  *
  * @param {Number} reportID
  */
-function fetchActions(reportID) {
+function fetchActions(reportID, offset) {
     API.Report_GetHistory({reportID})
         .then((data) => {
-            const indexedData = _.indexBy(data.history, 'sequenceNumber');
-            const maxSequenceNumber = _.chain(data.history)
+            let mostRecentActions;
+
+            if (offset) {
+                const start = data.history.length - 1 - offset;
+                mostRecentActions = data.history.slice(start, Math.min(start + 50, data.history.length - 1));
+            } else {
+                mostRecentActions = data.history.slice(0, 50);
+            }
+
+            const indexedData = _.indexBy(mostRecentActions, 'sequenceNumber');
+            const maxSequenceNumber = _.chain(mostRecentActions)
                 .pluck('sequenceNumber')
                 .max()
                 .value();
