@@ -376,18 +376,19 @@ function fetchChatReports() {
  * Get the actions of a report
  *
  * @param {Number} reportID
- * @param {Number} [reportActionID] When not provided most recent history is returned
+ * @param {Number} [offset] When not provided most recent history is returned
  */
-function fetchActions(reportID, reportActionID = 0) {
+function fetchActions(reportID, offset) {
     Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {loadingActions: true});
 
-    API.Report_GetPaginatedHistory({reportID, reportActionID, limit: 50})
+    API.Report_GetHistory({reportID, offset, limit: 50})
         .then((data) => {
             const indexedData = _.indexBy(data.history, 'sequenceNumber');
             const maxSequenceNumber = _.chain(data.history)
                 .pluck('sequenceNumber')
                 .max()
                 .value();
+
             Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`, indexedData);
             Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {maxSequenceNumber, loadingActions: false});
         });

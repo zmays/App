@@ -258,25 +258,9 @@ class ReportActionsView extends React.Component {
                     initialRowHeight={32}
                     onEndReached={() => {
                         const leastRecentActionID = _.last(this.sortedReportActions).action.sequenceNumber;
-                        this.throttledFetchActions(leastRecentActionID);
+                        this.throttledFetchActions(leastRecentActionID - 50, 'pageUp');
                     }}
                     onEndReachedThreshold={0.1}
-                    onScroll={({nativeEvent}) => {
-                        const scrollPosition = nativeEvent.contentOffset.y;
-
-                        // We could potentially add items here
-                        if (scrollPosition === 0) {
-                            // But it won't really work since we'd have to remove items when
-                            // paginating backwards in time. And when you remove items from FlatList
-                            // the scroll position borks.
-
-                            // Another idea could be to remove the older items once we reach the bottom
-                            // as that shouldn't effect anything.
-
-                            // Paginating in two directions is cool. But I wonder if we need to do it
-                            // just yet... maybe we can start with only the one direction for now.
-                        }
-                    }}
                 />
             </>
         );
