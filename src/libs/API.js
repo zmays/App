@@ -358,11 +358,13 @@ function Report_AddComment(parameters) {
 /**
  * @param {Object} parameters
  * @param {Number} parameters.reportID
+ * @param {Number} parameters.offset
+ * @param {Number} parameters.limit
  * @returns {Promise}
  */
-function Report_GetHistory(parameters) {
-    const commandName = 'Report_GetHistory';
-    requireParameters(['reportID'],
+function Report_GetPaginatedHistory(parameters) {
+    const commandName = 'Report_GetPaginatedHistory';
+    requireParameters(['reportID', 'reportActionID', 'limit'],
         parameters, commandName);
     return request(commandName, parameters);
 }
@@ -404,7 +406,7 @@ export {
     PersonalDetails_GetForEmails,
     Push_Authenticate,
     Report_AddComment,
-    Report_GetHistory,
+    Report_GetPaginatedHistory,
     Report_TogglePinned,
     Report_UpdateLastRead
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Keyboard, AppState} from 'react-native';
+import {View, Keyboard, AppState, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash.get';
@@ -20,6 +20,8 @@ const propTypes = {
 
     // Is this report currently in view?
     isActiveReport: PropTypes.bool.isRequired,
+
+    isLoadingActions: PropTypes.bool.isRequired,
 
     /* Onyx Props */
 
@@ -241,19 +243,26 @@ class ReportActionsView extends React.Component {
 
         this.updateSortedReportActions();
         return (
-            <InvertedFlatList
-                ref={el => this.actionListElement = el}
-                data={this.sortedReportActions}
-                renderItem={this.renderItem}
-                contentContainerStyle={[styles.chatContentScrollView]}
-                keyExtractor={item => `${item.action.sequenceNumber}`}
-                initialRowHeight={32}
-                onEndReached={() => {
-                    const leastRecentActionID = _.last(this.sortedReportActions).action.sequenceNumber;
-                    this.throttledFetchActions(leastRecentActionID);
-                }}
-                onEndReachedThreshold={0.1}
-            />
+            <>
+                <View style={{height: 30, flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    {this.props.isLoadingActions && (
+                        <ActivityIndicator />
+                    )}
+                </View>
+                <InvertedFlatList
+                    ref={el => this.actionListElement = el}
+                    data={this.sortedReportActions}
+                    renderItem={this.renderItem}
+                    contentContainerStyle={[styles.chatContentScrollView]}
+                    keyExtractor={item => `${item.action.sequenceNumber}`}
+                    initialRowHeight={32}
+                    onEndReached={() => {
+                        const leastRecentActionID = _.last(this.sortedReportActions).action.sequenceNumber;
+                        this.throttledFetchActions(leastRecentActionID);
+                    }}
+                    onEndReachedThreshold={0.1}
+                />
+            </>
         );
     }
 }

@@ -376,26 +376,20 @@ function fetchChatReports() {
  * Get the actions of a report
  *
  * @param {Number} reportID
+ * @param {Number} [reportActionID] When not provided most recent history is returned
  */
-function fetchActions(reportID, offset) {
-    API.Report_GetHistory({reportID})
+function fetchActions(reportID, reportActionID = 0) {
+    Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {loadingActions: true});
+
+    API.Report_GetPaginatedHistory({reportID, reportActionID, limit: 30})
         .then((data) => {
-            let mostRecentActions;
-
-            if (offset) {
-                const start = data.history.length - 1 - offset;
-                mostRecentActions = data.history.slice(start, Math.min(start + 50, data.history.length - 1));
-            } else {
-                mostRecentActions = data.history.slice(0, 50);
-            }
-
-            const indexedData = _.indexBy(mostRecentActions, 'sequenceNumber');
-            const maxSequenceNumber = _.chain(mostRecentActions)
+            const indexedData = _.indexBy(data.history, 'sequenceNumber');
+            const maxSequenceNumber = _.chain(data.history)
                 .pluck('sequenceNumber')
                 .max()
                 .value();
             Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`, indexedData);
-            Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {maxSequenceNumber});
+            Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {maxSequenceNumber, loadingActions: false});
         });
 }
 

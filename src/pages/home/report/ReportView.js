@@ -13,6 +13,12 @@ const propTypes = {
 
     // Whether or not this report is the one that is currently being viewed
     isActiveReport: PropTypes.bool.isRequired,
+
+    isLoadingActions: PropTypes.bool,
+};
+
+const defaultProps = {
+    isLoadingActions: false,
 };
 
 // This is a PureComponent so that it only re-renders when the reportID changes or when the report changes from
@@ -35,6 +41,7 @@ class ReportView extends React.PureComponent {
                 <ReportActionView
                     reportID={this.props.reportID}
                     isActiveReport={this.props.isActiveReport}
+                    isLoadingActions={this.props.isLoadingActions}
                 />
 
                 {shouldShowComposeForm && (
@@ -51,5 +58,6 @@ class ReportView extends React.PureComponent {
 }
 
 ReportView.propTypes = propTypes;
+ReportView.defaultProps = defaultProps;
 
 export default ReportView;

@@ -100,6 +100,7 @@ class MainView extends Component {
                         <ReportView
                             reportID={report.reportID}
                             isActiveReport={report.reportID === activeReportID}
+                            isLoadingActions={report.loadingActions}
                         />
                     </View>
                 ))}
