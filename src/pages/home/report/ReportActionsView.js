@@ -245,6 +245,10 @@ class ReportActionsView extends React.Component {
                 contentContainerStyle={[styles.chatContentScrollView]}
                 keyExtractor={item => `${item.action.sequenceNumber}`}
                 initialRowHeight={32}
+                onEndReached={() => {
+                    console.log('[marcaaron] Reached end of FlatList');
+                }}
+                onEndReachedThreshold={0.1}
             />
         );
     }
