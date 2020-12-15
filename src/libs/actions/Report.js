@@ -381,7 +381,7 @@ function fetchChatReports() {
 function fetchActions(reportID, reportActionID = 0) {
     Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {loadingActions: true});
 
-    API.Report_GetPaginatedHistory({reportID, reportActionID, limit: 30})
+    API.Report_GetPaginatedHistory({reportID, reportActionID, limit: 50})
         .then((data) => {
             const indexedData = _.indexBy(data.history, 'sequenceNumber');
             const maxSequenceNumber = _.chain(data.history)

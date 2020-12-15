@@ -244,9 +244,9 @@ class ReportActionsView extends React.Component {
         this.updateSortedReportActions();
         return (
             <>
-                <View style={{height: 30, flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{position: 'fixed', height: '100%', width: '100%', flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 20}}>
                     {this.props.isLoadingActions && (
-                        <ActivityIndicator />
+                        <ActivityIndicator color="#000000"/>
                     )}
                 </View>
                 <InvertedFlatList
@@ -261,6 +261,22 @@ class ReportActionsView extends React.Component {
                         this.throttledFetchActions(leastRecentActionID);
                     }}
                     onEndReachedThreshold={0.1}
+                    onScroll={({nativeEvent}) => {
+                        const scrollPosition = nativeEvent.contentOffset.y;
+
+                        // We could potentially add items here
+                        if (scrollPosition === 0) {
+                            // But it won't really work since we'd have to remove items when
+                            // paginating backwards in time. And when you remove items from FlatList
+                            // the scroll position borks.
+
+                            // Another idea could be to remove the older items once we reach the bottom
+                            // as that shouldn't effect anything.
+
+                            // Paginating in two directions is cool. But I wonder if we need to do it
+                            // just yet... maybe we can start with only the one direction for now.
+                        }
+                    }}
                 />
             </>
         );
