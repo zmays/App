@@ -33,9 +33,6 @@ class ReportView extends React.PureComponent {
     }
 
     render() {
-        // Only display the compose form for the active report because the form needs to get focus and
-        // calling focus() on 42 different forms doesn't work
-        const shouldShowComposeForm = this.props.isActiveReport;
         return (
             <View style={[styles.chatContent]}>
                 <ReportActionView
@@ -43,14 +40,10 @@ class ReportView extends React.PureComponent {
                     isActiveReport={this.props.isActiveReport}
                     isLoadingActions={this.props.isLoadingActions}
                 />
-
-                {shouldShowComposeForm && (
-                    <ReportActionCompose
-                        onSubmit={text => addAction(this.props.reportID, text)}
-                        reportID={this.props.reportID}
-                    />
-                )}
-
+                <ReportActionCompose
+                    onSubmit={text => addAction(this.props.reportID, text)}
+                    reportID={this.props.reportID}
+                />
                 <KeyboardSpacer />
             </View>
         );

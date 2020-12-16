@@ -65,44 +65,24 @@ class MainView extends Component {
 
     render() {
         const reportIDInUrl = parseInt(this.props.match.params.reportID, 10);
-
-        // The styles for each of our reports. Basically, they are all hidden except for the one matching the
-        // reportID in the URL
-        let activeReportID;
-        const reportStyles = _.reduce(this.props.reports, (memo, report) => {
-            const isActiveReport = reportIDInUrl === report.reportID;
-            const finalData = {...memo};
-            let reportStyle;
-
-            if (isActiveReport) {
-                activeReportID = report.reportID;
-                reportStyle = [styles.dFlex, styles.flex1];
-            } else {
-                reportStyle = [styles.dNone];
-            }
-
-            finalData[report.reportID] = [reportStyle];
-            return finalData;
-        }, {});
-
-        const reportsToDisplay = _.filter(this.props.reports, report => (
+        const reportToDisplay = _.find(this.props.reports, report => (
             report.reportID === reportIDInUrl
         ));
+
+        if (!reportToDisplay) {
+            return null;
+        }
+
         return (
-            <>
-                {_.map(reportsToDisplay, report => (
-                    <View
-                        key={report.reportID}
-                        style={reportStyles[report.reportID]}
-                    >
-                        <ReportView
-                            reportID={report.reportID}
-                            isActiveReport={report.reportID === activeReportID}
-                            isLoadingActions={report.loadingActions}
-                        />
-                    </View>
-                ))}
-            </>
+            <View
+                key={reportToDisplay.reportID}
+                style={[styles.dFlex, styles.flex1]}
+            >
+                <ReportView
+                    reportID={reportToDisplay.reportID}
+                    isLoadingActions={reportToDisplay.loadingActions}
+                />
+            </View>
         );
     }
 }

@@ -16,6 +16,11 @@ import NetworkConnection from '../NetworkConnection';
 import {hide as hideSidebar} from './Sidebar';
 import * as API from '../API';
 
+/**
+ * Limit parameter to send to the API when fetching report actions.
+ */
+const REPORT_ACTIONS_LIMIT = 75;
+
 let currentUserEmail;
 let currentUserAccountID;
 Onyx.connect({
@@ -381,7 +386,7 @@ function fetchChatReports() {
 function fetchActions(reportID, offset) {
     Onyx.merge(`${ONYXKEYS.COLLECTION.REPORT}${reportID}`, {loadingActions: true});
 
-    API.Report_GetHistory({reportID, offset, limit: 50})
+    API.Report_GetHistory({reportID, offset, limit: REPORT_ACTIONS_LIMIT})
         .then((data) => {
             const indexedData = _.indexBy(data.history, 'sequenceNumber');
             const maxSequenceNumber = _.chain(data.history)
@@ -638,4 +643,5 @@ export {
     saveReportComment,
     broadcastUserIsTyping,
     togglePinnedState,
+    REPORT_ACTIONS_LIMIT,
 };

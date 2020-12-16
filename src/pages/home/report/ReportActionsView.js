@@ -10,7 +10,7 @@ import _ from 'underscore';
 import lodashGet from 'lodash.get';
 import {withOnyx} from 'react-native-onyx';
 import Text from '../../../components/Text';
-import {fetchActions, updateLastReadActionID} from '../../../libs/actions/Report';
+import {fetchActions, updateLastReadActionID, REPORT_ACTIONS_LIMIT} from '../../../libs/actions/Report';
 import ONYXKEYS from '../../../ONYXKEYS';
 import ReportActionItem from './ReportActionItem';
 import styles from '../../../styles/styles';
@@ -22,9 +22,6 @@ import Visibility from '../../../libs/Visibility';
 const propTypes = {
     // The ID of the report actions will be created for
     reportID: PropTypes.number.isRequired,
-
-    // Is this report currently in view?
-    isActiveReport: PropTypes.bool.isRequired,
 
     isLoadingActions: PropTypes.bool.isRequired,
 
@@ -56,35 +53,22 @@ class ReportActionsView extends React.Component {
         this.throttledFetchActions = _.throttle((offset) => {
             fetchActions(this.props.reportID, offset);
         }, 500, {trailing: false});
-
-        this.state = {
-            refetchNeeded: true,
-        };
     }
 
     componentDidMount() {
         this.visibilityChangeEvent = AppState.addEventListener('change', () => {
-            if (this.props.isActiveReport && Visibility.isVisible()) {
+            if (Visibility.isVisible()) {
                 setTimeout(this.recordMaxAction, 3000);
             }
         });
-        if (this.props.isActiveReport) {
-            this.keyboardEvent = Keyboard.addListener('keyboardDidShow', this.scrollToListBottom);
-            this.recordMaxAction();
-        }
+
+        this.keyboardEvent = Keyboard.addListener('keyboardDidShow', this.scrollToListBottom);
+        this.recordMaxAction();
 
         fetchActions(this.props.reportID);
     }
 
     componentDidUpdate(prevProps) {
-        // If we previously had a value for reportActions but no longer have one
-        // this can only mean that the reportActions have been deleted. So we must
-        // refetch these actions the next time we switch to this chat.
-        if (prevProps.reportActions && !this.props.reportActions) {
-            this.setRefetchNeeded(true);
-            return;
-        }
-
         if (_.size(prevProps.reportActions) !== _.size(this.props.reportActions)) {
             // If a new comment is added and it's from the current user scroll to the bottom otherwise
             // leave the user positioned where they are now in the list.
@@ -95,23 +79,9 @@ class ReportActionsView extends React.Component {
 
             // When the number of actions change, wait three seconds, then record the max action
             // This will make the unread indicator go away if you receive comments in the same chat you're looking at
-            if (this.props.isActiveReport && Visibility.isVisible()) {
+            if (Visibility.isVisible()) {
                 setTimeout(this.recordMaxAction, 3000);
             }
-
-            return;
-        }
-
-        // If we are switching from not active to active report then mark comments as
-        // read and bind the keyboard listener for this report
-        if (!prevProps.isActiveReport && this.props.isActiveReport) {
-            if (this.state.refetchNeeded) {
-                fetchActions(this.props.reportID);
-                this.setRefetchNeeded(false);
-            }
-
-            this.recordMaxAction();
-            this.keyboardEvent = Keyboard.addListener('keyboardDidShow', this.scrollToListBottom);
         }
     }
 
@@ -122,16 +92,6 @@ class ReportActionsView extends React.Component {
         if (this.visibilityChangeEvent) {
             this.visibilityChangeEvent.remove();
         }
-    }
-
-    /**
-     * When setting to true we will refetch the reportActions
-     * the next time this report is switched to.
-     *
-     * @param {Boolean} refetchNeeded
-     */
-    setRefetchNeeded(refetchNeeded) {
-        this.setState({refetchNeeded});
     }
 
     /**
@@ -273,7 +233,7 @@ class ReportActionsView extends React.Component {
                     initialRowHeight={32}
                     onEndReached={() => {
                         const leastRecentActionID = _.last(this.sortedReportActions).action.sequenceNumber;
-                        this.throttledFetchActions(leastRecentActionID - 50, 'pageUp');
+                        this.throttledFetchActions(leastRecentActionID - REPORT_ACTIONS_LIMIT);
                     }}
                     onEndReachedThreshold={0.1}
                 />
@@ -288,7 +248,7 @@ ReportActionsView.defaultProps = defaultProps;
 export default withOnyx({
     reportActions: {
         key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-        canEvict: props => !props.isActiveReport,
+        canEvict: false,
     },
     session: {
         key: ONYXKEYS.SESSION,
