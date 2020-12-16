@@ -1,5 +1,10 @@
 import React from 'react';
-import {View, Keyboard, AppState, ActivityIndicator} from 'react-native';
+import {
+    View,
+    Keyboard,
+    AppState,
+    ActivityIndicator,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash.get';
@@ -244,9 +249,19 @@ class ReportActionsView extends React.Component {
         this.updateSortedReportActions();
         return (
             <>
-                <View style={{position: 'fixed', height: '100%', width: '100%', flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 20}}>
+                <View
+                    style={{
+                        position: 'fixed',
+                        height: '100%',
+                        width: '100%',
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        paddingTop: 20,
+                    }}
+                >
                     {this.props.isLoadingActions && (
-                        <ActivityIndicator color="#000000"/>
+                        <ActivityIndicator color="#000000" />
                     )}
                 </View>
                 <InvertedFlatList
