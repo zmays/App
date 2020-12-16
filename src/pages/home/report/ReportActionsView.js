@@ -17,6 +17,7 @@ import ReportActionPropTypes from './ReportActionPropTypes';
 import InvertedFlatList from '../../../components/InvertedFlatList';
 import {lastItem} from '../../../libs/CollectionUtils';
 import Visibility from '../../../libs/Visibility';
+import ReportLoadingFeedback from './ReportLoadingFeedback';
 
 const propTypes = {
     // The ID of the report actions will be created for
@@ -216,6 +217,7 @@ class ReportActionsView extends React.Component {
         return (
             <>
                 <InvertedFlatList
+                    ListFooterComponent={() => <ReportLoadingFeedback isLoadingActions={this.props.isLoadingActions} />}
                     ref={el => this.actionListElement = el}
                     data={this.sortedReportActions}
                     renderItem={this.renderItem}

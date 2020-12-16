@@ -312,8 +312,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
         height: 30,
-        width: 30,
-        marginLeft: 10,
+        width: '100%',
     },
 
     typingIndicator: {

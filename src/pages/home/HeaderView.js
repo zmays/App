@@ -11,7 +11,6 @@ import pinEnabled from '../../../assets/images/pin-enabled.png';
 import pinDisabled from '../../../assets/images/pin-disabled.png';
 import compose from '../../libs/compose';
 import {togglePinnedState} from '../../libs/actions/Report';
-import ReportLoadingFeedback from './report/ReportLoadingFeedback';
 
 const propTypes = {
     // Toggles the hamburger menu open and closed
@@ -31,9 +30,6 @@ const propTypes = {
 
         // Value indicating if the report is pinned or not
         isPinned: PropTypes.bool,
-
-        // Is this report loading new actions?
-        loadingActions: PropTypes.bool,
     }),
 };
 
@@ -69,7 +65,6 @@ const HeaderView = props => (
                             {props.report.reportName}
                         </Text>
                     </View>
-                    <ReportLoadingFeedback isLoadingActions={props.report.loadingActions} />
                     <View style={[styles.reportOptions, styles.flexRow]}>
                         <TouchableOpacity
                             onPress={() => togglePinnedState(props.report)}
