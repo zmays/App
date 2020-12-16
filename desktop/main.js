@@ -4,7 +4,8 @@ const {
     Menu,
     MenuItem,
     shell,
-    ipcMain
+    ipcMain,
+    session
 } = require('electron');
 const serve = require('electron-serve');
 const contextMenu = require('electron-context-menu');
@@ -18,10 +19,6 @@ const checkForUpdates = require('../src/libs/checkForUpdates');
  *
  * @see: https://www.electronjs.org/docs/tutorial/application-architecture#main-and-renderer-processes
  */
-
-// TODO: Turn this off, use web-security after alpha launch, currently we receive a CORS issue preventing
-// the electron app from making any API requests.
-app.commandLine.appendSwitch('disable-web-security');
 
 // Initialize the right click menu
 // See https://github.com/sindresorhus/electron-context-menu
@@ -121,6 +118,21 @@ const mainWindow = (() => {
 
             app.on('before-quit', () => quitting = true);
             app.on('activate', () => browserWindow.show());
+
+            // Modify the user agent for all requests to the following urls.
+            const filter = {
+                urls: ['https://*.expensify.com./*', 'http://*.expensify.com./*']
+            };
+
+            session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+                details.requestHeaders['referer'] = 'https://chat.expensify.com/';
+                details.requestHeaders['Origin'] = 'https://chat.expensify.com/';
+                callback({cancel: false, requestHeaders: details.requestHeaders});
+            });
+
+            session.defaultSession.webRequest.onSendHeaders(filter, (details) => {
+                console.log(details)
+            });
 
             ipcMain.on(ELECTRON_EVENTS.REQUEST_VISIBILITY, (event) => {
                 // This is how synchronous messages work in Electron
