@@ -313,6 +313,7 @@ const styles = {
         justifyContent: 'center',
         height: 30,
         width: '100%',
+        marginBottom: 10,
     },
 
     typingIndicator: {
