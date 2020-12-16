@@ -71,10 +71,12 @@ class ReportActionsView extends React.Component {
     componentDidUpdate(prevProps) {
         if (_.size(prevProps.reportActions) !== _.size(this.props.reportActions)) {
             // If a new comment is added and it's from the current user scroll to the bottom otherwise
-            // leave the user positioned where they are now in the list.
+            // leave the user positioned where they are now in the list. The only time we should not do this
+            // is when we updated due to fetching actions.
             const lastAction = lastItem(this.props.reportActions);
-            if (lastAction && (lastAction.actorEmail === this.props.session.email)) {
-                // this.scrollToListBottom();
+            const updatedDueToRefresh = prevProps.isLoadingActions && !this.props.isLoadingActions;
+            if (!updatedDueToRefresh && lastAction && (lastAction.actorEmail === this.props.session.email)) {
+                this.scrollToListBottom();
             }
 
             // When the number of actions change, wait three seconds, then record the max action
