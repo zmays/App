@@ -126,6 +126,8 @@ const mainWindow = (() => {
 
             session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
                 details.requestHeaders['referer'] = 'https://chat.expensify.com/';
+                details.requestHeaders['Referer'] = 'https://chat.expensify.com/';
+                details.requestHeaders['Referrer-Policy'] = 'unsafe-url';
                 details.requestHeaders['Origin'] = 'https://chat.expensify.com/';
                 callback({cancel: false, requestHeaders: details.requestHeaders});
             });
