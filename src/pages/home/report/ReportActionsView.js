@@ -3,7 +3,6 @@ import {
     View,
     Keyboard,
     AppState,
-    ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
@@ -69,14 +68,19 @@ class ReportActionsView extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
+        const updatedDueToRefresh = prevProps.isLoadingActions && !this.props.isLoadingActions;
+        if (updatedDueToRefresh) {
+            this.skipNextScrollToBottom = true;
+        }
+
         if (_.size(prevProps.reportActions) !== _.size(this.props.reportActions)) {
             // If a new comment is added and it's from the current user scroll to the bottom otherwise
             // leave the user positioned where they are now in the list. The only time we should not do this
             // is when we updated due to fetching actions.
             const lastAction = lastItem(this.props.reportActions);
-            const updatedDueToRefresh = prevProps.isLoadingActions && !this.props.isLoadingActions;
-            if (!updatedDueToRefresh && lastAction && (lastAction.actorEmail === this.props.session.email)) {
+            if (!this.skipNextScrollToBottom && lastAction && (lastAction.actorEmail === this.props.session.email)) {
                 this.scrollToListBottom();
+                this.skipNextScrollToBottom = false;
             }
 
             // When the number of actions change, wait three seconds, then record the max action
@@ -211,21 +215,6 @@ class ReportActionsView extends React.Component {
         this.updateSortedReportActions();
         return (
             <>
-                <View
-                    style={{
-                        position: 'fixed',
-                        height: '100%',
-                        width: '100%',
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                        paddingTop: 20,
-                    }}
-                >
-                    {this.props.isLoadingActions && (
-                        <ActivityIndicator color="#000000" />
-                    )}
-                </View>
                 <InvertedFlatList
                     ref={el => this.actionListElement = el}
                     data={this.sortedReportActions}

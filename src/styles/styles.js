@@ -308,6 +308,14 @@ const styles = {
         marginLeft: 8,
     },
 
+    reportLoadingFeedback: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 30,
+        width: 30,
+        marginLeft: 10,
+    },
+
     typingIndicator: {
         height: 15,
         marginBottom: 5,
