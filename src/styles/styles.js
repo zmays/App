@@ -8,6 +8,11 @@ import variables from './variables';
 import colors from './colors';
 
 const styles = {
+    screenPic: {
+        height: 400,
+        width: 800,
+    },
+
     // Utility classes
     m0: {
         margin: 0,

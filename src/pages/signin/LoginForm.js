@@ -1,9 +1,10 @@
 import React from 'react';
-import {Text, TextInput, View} from 'react-native';
+import {Text, TextInput, View, Image, ScrollView} from 'react-native';
 import styles from '../../styles/styles';
 import SubmitButton from './SubmitButton';
 import openURLInNewTab from '../../libs/openURLInNewTab';
 import {hasAccount} from '../../libs/actions/Session';
+import screen from '../../../assets/images/screen.png';
 
 class LoginForm extends React.Component {
     constructor() {
@@ -69,36 +70,41 @@ class LoginForm extends React.Component {
 
                 <View style={[styles.hr]} />
 
-                <View style={[styles.mt5]}>
-                    <Text style={[styles.h3]}>
-                        Welcome to the Expensify.cash beta
-                    </Text>
-                </View>
-
-                <View style={[styles.mt4]}>
-                    <Text style={[styles.textP]}>
-                        Expensify.cash is the next generation of Expensify: a reimagination of payments based atop a
-                        {' '}
-                        foundation of chat. Best of all, it&apos;s fully open source!
-                    </Text>
-                </View>
-
-                <View style={[styles.mt4]}>
-                    <Text style={[styles.textP]}>
-                        And yes you heard right -- there&apos;s cash involved! Check out
-                        {' '}
-                        <Text
-                            style={[styles.link, styles.mx1]}
-                            onPress={() => openURLInNewTab('https://testflight.apple.com/join/ucuXr4g5')}
-                        >
-                            the repository
+                <ScrollView>
+                    <View style={[styles.alignItemsCenter]}>
+                    <View style={[styles.mt5]}>
+                        <Text style={[styles.h3]}>
+                            Welcome to the Expensify.cash beta
                         </Text>
-                        {' '}
-                        for the current list of issues that are available to work on. We&apos;re making new issues
-                        {' '}
-                        every day, so be sure to check back, and feel free to file your own.
-                    </Text>
-                </View>
+                    </View>
+
+                    <View style={[styles.mt4]}>
+                        <Text style={[styles.textP]}>
+                            Expensify.cash is the next generation of Expensify: a reimagination of payments based atop a
+                            {' '}
+                            foundation of chat. Best of all, it&apos;s fully open source!
+                        </Text>
+                    </View>
+
+                    <View style={[styles.mt4]}>
+                        <Text style={[styles.textP]}>
+                            And yes you heard right -- there&apos;s cash involved! Check out
+                            {' '}
+                            <Text
+                                style={[styles.link, styles.mx1]}
+                                onPress={() => openURLInNewTab('https://testflight.apple.com/join/ucuXr4g5')}
+                            >
+                                the repository
+                            </Text>
+                            {' '}
+                            for the current list of issues that are available to work on. We&apos;re making new issues
+                            {' '}
+                            every day, so be sure to check back, and feel free to file your own.
+                        </Text>
+                    </View>
+                    <Image style={[styles.screenPic]} resizeMode="contain" source={screen} />
+                    </View>
+                </ScrollView>
             </>
         );
     }
