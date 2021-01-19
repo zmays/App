@@ -50,6 +50,8 @@ platform :ios do
   lane :build do
     ENV["ENVFILE"]=".env.production"
 
+    xcversion(version = "12.3")
+
     build_app(
         workspace: "./ios/ExpensifyCash.xcworkspace",
         scheme: "ExpensifyCash"
