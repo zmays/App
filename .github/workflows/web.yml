@@ -25,6 +25,6 @@ jobs:
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
               run: |
-                   sudo python3 -m pip install --upgrade "pip < 21.0"
+                   sudo python3 -m pip install --upgrade pip==20.3.4
                    pip3 install wheel
                    pip3 install cloudflare
