@@ -25,17 +25,9 @@ jobs:
                     sudo apt-get update
                     sudo apt install python3.6
                     sudo python3.6 -m pip install --upgrade pip
-                    echo "Pip version: $(pip -V)"
-                    echo "Pip3 version: $(pip3 -V)"
-                    echo "Python version: $(python3 -V)"
 
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
               run: |
-                   echo "Pip version: $(pip -V)"
-                   echo "Pip3 version: $(pip3 -V)"
-                   echo "Python version: $(python3 -V)"
                    # need wheel before cloudflare, this is the only way to ensure order.
-                   sudo pip3 install -U setuptools
-                   sudo pip3 install wheel
-                   sudo pip3 install cloudflare
+                   sudo pip3 install setuptools wheel cloudflare
