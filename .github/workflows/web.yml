@@ -20,20 +20,11 @@ jobs:
 
             # Install python pre-reqs
             - name: Setup python
-              run: |
-                    # The latest version of pip doesn't support python3.5, so use 3.6
-                    # Since we're on 16.04, we need to fetch from this repo
-                    #sudo add-apt-repository ppa:deadsnakes/ppa
-                    #sudo apt-get update
-                    #sudo apt install python3.6
-                    sudo apt-get install python3-setuptools
-                    sudo python3 -m pip install --upgrade "pip < 21.0"
+              run: sudo apt-get install python3-setuptools
 
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
               run: |
-                   # ensure setuptools is updated to latest pip3 version
-                   sudo pip3 install -U setuptools
-                   # need wheel before cloudflare, this is the only way to ensure order.
-                   sudo pip3 install wheel
-                   sudo pip3 install cloudflare
+                   sudo python3 -m pip install --upgrade "pip < 21.0"
+                   pip3 install wheel
+                   pip3 install cloudflare
