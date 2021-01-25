@@ -20,11 +20,11 @@ jobs:
 
             # Install python pre-reqs
             - name: Setup python
-              run: sudo apt-get install python3-setuptools
+              run: sudo apt-get install python3-pip
 
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
               run: |
-                   pip3 install --upgrade pip
+                   pip3 install --upgrade pip setuptools
                    pip3 install wheel # need wheel before cloudflare, this is the only way to ensure order.
                    pip3 install cloudflare
