@@ -21,10 +21,13 @@ jobs:
             # Install python pre-reqs
             - name: Setup python
               run: |
-                    sudo add-apt-repository ppa:deadsnakes/ppa
-                    sudo apt-get update
-                    sudo apt install python3.6
-                    sudo python3.6 -m pip install --upgrade pip
+                    # The latest version of pip doesn't support python3.5, so use 3.6
+                    # Since we're on 16.04, we need to fetch from this repo
+                    #sudo add-apt-repository ppa:deadsnakes/ppa
+                    #sudo apt-get update
+                    #sudo apt install python3.6
+                    sudo apt-get install python3-setuptools
+                    sudo python3 -m pip install --upgrade "pip < 21.0"
 
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
