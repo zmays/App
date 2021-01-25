@@ -24,10 +24,11 @@ jobs:
                     sudo add-apt-repository ppa:deadsnakes/ppa
                     sudo apt-get update
                     sudo apt install python3.6
-                    sudo python3 -m pip install --upgrade pip
+                    echo "Python version: $(python3 -V)"
+                    echo "Python3.6 version: $(python3.6 -V)"
+                    sudo python3.6 -m pip install --upgrade pip
                     echo "Pip version: $(pip -V)"
                     echo "Pip3 version: $(pip3 -V)"
-                    echo "Python version: $(python3 -V)"
 
             # Installs Cloudflare CLI, after installing/upgrading dependencies
             - name: Setup Cloudflare CLI
