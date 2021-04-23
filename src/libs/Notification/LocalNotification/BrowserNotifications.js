@@ -4,6 +4,8 @@ import Onyx from 'react-native-onyx';
 import focusApp from './focusApp';
 import EXPENSIFY_ICON_URL from '../../../../assets/images/expensify-logo-round.png';
 import ONYXKEYS from '../../../ONYXKEYS';
+import {ipcRenderer} from 'electron';
+import {Platform} from 'react-native-web';
 
 const DEFAULT_DELAY = 4000;
 
@@ -88,7 +90,14 @@ function push({
                 notification.close();
             };
 
-            resolve(notification);
+            if (Platform.OS === 'desktop') {
+                ipcRenderer.invoke('joetest', [
+                    resolve,
+                    notification,
+                ]);
+            } else {
+                resolve(notification);
+            }
         });
     });
 }

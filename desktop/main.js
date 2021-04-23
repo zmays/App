@@ -84,6 +84,12 @@ const quitAndInstallWithUpdate = () => {
     autoUpdater.quitAndInstall();
 };
 
+const joeTest = (args) => {
+    const resolve = args[0];
+    const notification = args[1];
+    resolve(notification);
+};
+
 // Defines the system-level menu item for manually triggering an update after
 const updateAppMenuItem = new MenuItem({
     label: 'Update Expensify.cash',
@@ -247,6 +253,8 @@ const mainWindow = (() => {
             if (!isDev) {
                 checkForUpdates(electronUpdater(browserWindow));
             }
+
+            ipcMain.on('joetest', joeTest);
         });
 });
 
