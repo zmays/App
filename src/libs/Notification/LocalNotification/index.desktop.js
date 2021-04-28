@@ -1,4 +1,4 @@
-import BrowserNotifications from './BrowserNotifications/index';
+import BrowserNotifications from './BrowserNotifications/index.desktop';
 
 function showCommentNotification({reportAction, onClick}) {
     BrowserNotifications.pushReportCommentNotification({reportAction, onClick});

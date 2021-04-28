@@ -1,11 +1,9 @@
 // Web and desktop implementation only. Do not import for direct use. Use LocalNotification.
 import Str from 'expensify-common/lib/str';
 import Onyx from 'react-native-onyx';
-import focusApp from './focusApp';
-import EXPENSIFY_ICON_URL from '../../../../assets/images/expensify-logo-round.png';
-import ONYXKEYS from '../../../ONYXKEYS';
-import {ipcRenderer} from 'electron';
-import {Platform} from 'react-native-web';
+import focusApp from '../focusApp';
+import EXPENSIFY_ICON_URL from '../../../../../assets/images/expensify-logo-round.png';
+import ONYXKEYS from '../../../../ONYXKEYS';
 
 const DEFAULT_DELAY = 4000;
 
@@ -89,15 +87,7 @@ function push({
                 focusApp();
                 notification.close();
             };
-
-            if (Platform.OS === 'desktop') {
-                ipcRenderer.invoke('joetest', [
-                    resolve,
-                    notification,
-                ]);
-            } else {
-                resolve(notification);
-            }
+            resolve(notification);
         });
     });
 }
