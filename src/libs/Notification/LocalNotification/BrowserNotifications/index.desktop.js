@@ -4,7 +4,7 @@ import Onyx from 'react-native-onyx';
 import focusApp from '../focusApp';
 import EXPENSIFY_ICON_URL from '../../../../../assets/images/expensify-logo-round.png';
 import ONYXKEYS from '../../../../ONYXKEYS';
-import {ipcRenderer} from 'electron';
+const {ipcRenderer} = require('electron');
 
 const DEFAULT_DELAY = 4000;
 
@@ -89,10 +89,7 @@ function push({
                 notification.close();
             };
 
-            ipcRenderer.invoke('joetest', [
-                resolve,
-                notification,
-            ]);
+            ipcRenderer.send('joetest', JSON.stringify({notification, callback: resolve}));
         });
     });
 }

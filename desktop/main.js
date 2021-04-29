@@ -84,12 +84,6 @@ const quitAndInstallWithUpdate = () => {
     autoUpdater.quitAndInstall();
 };
 
-const joeTest = (args) => {
-    const resolve = args[0];
-    const notification = args[1];
-    resolve(notification);
-};
-
 // Defines the system-level menu item for manually triggering an update after
 const updateAppMenuItem = new MenuItem({
     label: 'Update Expensify.cash',
@@ -239,6 +233,16 @@ const mainWindow = (() => {
                 app.setBadgeCount(totalCount);
             });
 
+            ipcMain.on('joetest', (event, args) => {
+                const data = JSON.parse(args);
+                const notification = data.notification;
+                const func = data.callback;
+
+                new Notification('testing');
+
+                //func(notification);
+            });
+
             return browserWindow;
         })
 
@@ -253,8 +257,6 @@ const mainWindow = (() => {
             if (!isDev) {
                 checkForUpdates(electronUpdater(browserWindow));
             }
-
-            ipcMain.on('joetest', joeTest);
         });
 });
 
