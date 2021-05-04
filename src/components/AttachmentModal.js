@@ -70,6 +70,10 @@ class AttachmentModal extends PureComponent {
         this.submitAndClose = this.submitAndClose.bind(this);
     }
 
+    onClose() {
+        this.setState({isModalOpen: false});
+    }
+
     /**
      * Execute the onConfirm callback and close the modal.
      */
@@ -98,7 +102,7 @@ class AttachmentModal extends PureComponent {
                 <Modal
                     type={CONST.MODAL.MODAL_TYPE.CENTERED}
                     onSubmit={this.submitAndClose}
-                    onClose={() => this.setState({isModalOpen: false})}
+                    onClose={this.onClose.bind(this)}
                     isVisible={this.state.isModalOpen}
                     backgroundColor={themeColors.componentBG}
                     onModalHide={this.props.onModalHide}
@@ -112,7 +116,11 @@ class AttachmentModal extends PureComponent {
                     />
                     <View style={attachmentViewStyles}>
                         {this.state.sourceURL && (
-                            <AttachmentView sourceURL={sourceURL} file={this.state.file} />
+                            <AttachmentView
+                                sourceURL={sourceURL}
+                                file={this.state.file}
+                                modalCallback={this.onClose.bind(this)}
+                            />
                         )}
                     </View>
 

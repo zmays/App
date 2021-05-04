@@ -14,7 +14,13 @@ const propTypes = {
     // URL to full-sized image
     url: PropTypes.string.isRequired,
 
+    modalCallback: PropTypes.func,
+
     ...windowDimensionsPropTypes,
+};
+
+const defaultProps = {
+    modalCallback: null,
 };
 
 class ImageView extends PureComponent {
@@ -34,6 +40,8 @@ class ImageView extends PureComponent {
     }
 
     render() {
+        const modalCallback = this.props.modalCallback ?? null;
+
         // Default windowHeight accounts for the modal header height
         const windowHeight = this.props.windowHeight - variables.contentHeaderHeight;
         return (
@@ -52,12 +60,21 @@ class ImageView extends PureComponent {
                     cropHeight={windowHeight}
                     imageWidth={this.state.imageWidth}
                     imageHeight={this.state.imageHeight}
-                    onStartShouldSetPanResponder={(e) => {
+                    onStartShouldSetPanResponder={(e) => true}
+                    // enableSwipeDown
+                    // swipeDownThreshold={10}
+                    onMoveShouldSetPanResponder={(e, gestureState) => {
                         const isDoubleClick = new Date().getTime() - this.lastClickTime <= this.doubleClickInterval;
                         this.lastClickTime = new Date().getTime();
 
+                        console.log(`joetest event touches: ${e.nativeEvent.touches.length}`);
+                        console.log(`joetest zoom: ${this.imageZoomScale}`);
+                        console.log(`joetest changed touches: ${e.nativeEvent.changedTouches.length}`);
+                        console.log(`joetest gesture state active touches: ${gestureState.numberActiveTouches}`);
+
                         // Let ImageZoom handle the event if the tap is more than one touchPoint or if we are zoomed in
-                        if (e.nativeEvent.touches.length === 2 || this.imageZoomScale !== 1) {
+                        if (e.nativeEvent.touches.length !== 1 || this.imageZoomScale !== 1) {
+                            console.log('joetest returning true');
                             return true;
                         }
 
@@ -73,11 +90,29 @@ class ImageView extends PureComponent {
                         }
 
                         // We must be either swiping down or double tapping since we are at zoom scale 1
+                        console.log('joetest returning false');
+                        if (modalCallback) {
+                            console.log('modalCallback');
+                            modalCallback();
+                        } else {
+                            console.log('not modalCallback');
+                        }
+
                         return false;
                     }}
-                    onMove={({scale}) => {
-                        this.imageZoomScale = scale;
+                    onPanResponderTerminationRequest={(e, state) => {
+                        console.log(`joetest termination request`);
                     }}
+                    onMove={({type, scale, positionX, positionY, zoomCurrentDistance}) => {
+                        console.log(`joetest onMove setting scale ${scale}, positionX ${positionX}, positionY ${positionY}, zcd ${zoomCurrentDistance}`);
+                        this.imageZoomScale = scale;
+                        if (scale === 1 && modalCallback && type === 'onPanResponderRelease') {
+                            modalCallback();
+                        }
+                    }}
+                    // onSwipeDown={() => {
+                    //     console.log('joetest onSwipeDown');
+                    // }}
                 >
                     <ImageWithSizeCalculation
                         style={getWidthAndHeightStyle(this.state.imageWidth, this.state.imageHeight)}
@@ -101,6 +136,7 @@ class ImageView extends PureComponent {
     }
 }
 
+ImageView.defaultProps = defaultProps;
 ImageView.propTypes = propTypes;
 ImageView.displayName = 'ImageView';
 

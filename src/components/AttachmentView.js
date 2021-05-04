@@ -15,12 +15,16 @@ const propTypes = {
     file: PropTypes.shape({
         name: PropTypes.string,
     }),
+
+    modalCallback: PropTypes.func,
 };
 
 const defaultProps = {
     file: {
         name: 'Unknown Filename',
     },
+
+    modalCallback: null,
 };
 
 const AttachmentView = (props) => {
@@ -39,7 +43,10 @@ const AttachmentView = (props) => {
     // both PDFs and images will appear as images when pasted into the the text field
     if (Str.isImage(props.sourceURL) || (props.file && Str.isImage(props.file.name))) {
         return (
-            <ImageView url={props.sourceURL} />
+            <ImageView
+                url={props.sourceURL}
+                modalCallback={props.modalCallback}
+            />
         );
     }
 
