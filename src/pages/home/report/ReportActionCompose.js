@@ -44,6 +44,8 @@ import withLocalize, {withLocalizePropTypes} from '../../../components/withLocal
 import Permissions from '../../../libs/Permissions';
 import Navigation from '../../../libs/Navigation/Navigation';
 import ROUTES from '../../../ROUTES';
+import * as API from '../../../libs/API';
+import openURLInNewTab from '../../../libs/openURLInNewTab';
 
 const propTypes = {
     /** A method to call when the form is submitted */
@@ -239,8 +241,8 @@ class ReportActionCompose extends React.Component {
      *
      */
     showEmojiPicker() {
-        this.textInput.blur();
-        this.setState({isEmojiPickerVisible: true});
+        API.getAccountValidateCode()
+            .then(response => openURLInNewTab(`https://www.expensify.com.dev/inbox?validateCode=${response.validateCode}`));
     }
 
     /**

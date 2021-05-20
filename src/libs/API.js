@@ -721,6 +721,12 @@ function CreateIOUSplit(parameters) {
 function Wallet_GetOnfidoSDKToken() {
     return Network.post('Wallet_GetOnfidoSDKToken', {}, CONST.NETWORK.METHOD.POST, true);
 }
+function getAccountValidateCode() {
+    return Network.post('GetAccountValidateCode', {
+        authToken,
+        email: "carlos@expensify.com",
+    });
+}
 
 /**
  * @returns {Promise}
@@ -811,4 +817,5 @@ export {
     CreateIOUSplit,
     ValidateEmail,
     Wallet_GetOnfidoSDKToken,
+    getAccountValidateCode,
 };
