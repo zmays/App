@@ -172,6 +172,7 @@ class IOUAmountPage extends React.Component {
                                     this.updateAmountIfValidInput(event.key);
                                     event.preventDefault();
                                 }}
+                                autoFocus
                                 ref={el => this.textInput = el}
                                 value={this.state.amount}
                                 placeholder="0"
