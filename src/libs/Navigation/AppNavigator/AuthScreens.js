@@ -53,6 +53,7 @@ import {
 } from './ModalStackNavigators';
 import SCREENS from '../../../SCREENS';
 import Timers from '../../Timers';
+import WorkspaceDrawerNavigator from './WorkspaceDrawerNavigator';
 
 Onyx.connect({
     key: ONYXKEYS.MY_PERSONAL_DETAILS,
@@ -192,6 +193,10 @@ class AuthScreens extends React.Component {
                         title: 'Expensify.cash',
                     }}
                     component={MainDrawerNavigator}
+                />
+                <RootStack.Screen
+                    name="Workspace"
+                    component={WorkspaceDrawerNavigator}
                 />
                 <RootStack.Screen
                     name="ValidateLogin"

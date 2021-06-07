@@ -18,6 +18,8 @@ Onyx.connect({
 
 export const navigationRef = React.createRef();
 
+window.navRef = navigationRef;
+
 /**
  * Opens the LHN drawer.
  * @private
