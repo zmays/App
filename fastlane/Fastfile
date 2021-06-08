@@ -64,7 +64,8 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_screenshots: true,
+      version_codes_to_retain: [ENV["VERSION_CODE"].to_i],
     )
   end
 end
