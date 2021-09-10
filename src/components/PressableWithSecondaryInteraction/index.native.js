@@ -18,11 +18,12 @@ const PressableWithSecondaryInteraction = props => (
         delayLongPress={200}
         onLongPress={(e) => {
             e.preventDefault();
-            const options = {
-                enableVibrateFallback: true,
-                ignoreAndroidSystemSettings: false,
-            };
-            ReactNativeHapticFeedback.trigger('soft', options);
+            // const options = {
+            //     enableVibrateFallback: true,
+            //     ignoreAndroidSystemSettings: false,
+            // };
+            // ReactNativeHapticFeedback.trigger('soft', options);
+            ReactNativeHapticFeedback.trigger('effectClick');
         }}
         onPressOut={props.onPressOut}
         // eslint-disable-next-line react/jsx-props-no-spreading
