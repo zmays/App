@@ -17,6 +17,7 @@ function get(name, onyxKey, defaultValue) {
     })
         .then((response) => {
             const value = lodashGet(response.nameValuePairs, [name], defaultValue || '');
+            if (name === 'isFirstTimeNewExpensifyUser') console.log('[AuthScreens] setting nvp to ', value);
             Onyx.set(onyxKey, value);
         });
 }

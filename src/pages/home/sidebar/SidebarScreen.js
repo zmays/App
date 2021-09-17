@@ -35,7 +35,7 @@ const propTypes = {
     betas: PropTypes.arrayOf(PropTypes.string).isRequired,
 
     /** Flag for new users used to open the Global Create menu on first load */
-    isFirstTimeNewExpensifyUser: PropTypes.bool.isRequired,
+    isFirstTimeNewExpensifyUser: PropTypes.bool,
 
     /** The list of this user's policies */
     policies: PropTypes.objectOf(PropTypes.shape({
@@ -52,6 +52,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+    isFirstTimeNewExpensifyUser: false,
     policies: {},
 };
 
@@ -73,21 +74,14 @@ class SidebarScreen extends Component {
         Performance.markStart(CONST.TIMING.SIDEBAR_LOADED);
         Timing.start(CONST.TIMING.SIDEBAR_LOADED, true);
 
-        if (this.props.isFirstTimeNewExpensifyUser) {
-            const hasFreePolicy = _.chain(this.props.policies)
-                .some(policy => policy && policy.type === CONST.POLICY.TYPE.FREE && policy.role === CONST.POLICY.ROLE.ADMIN)
-                .value();
+        console.log('[SidebarScreen] componentDidMount');
+    }
 
-            // If user doesn't have any free policies (workspaces) set up, automatically open create menu
-            if (!hasFreePolicy) {
-                // For some reason, the menu doesn't open without the timeout
-                setTimeout(() => {
-                    this.toggleCreateMenu();
-                }, 200);
-            }
-
-            // Set the NVP to false so we don't automatically open the menu again
-            // Note: this may need to be moved if this NVP is used for anything else later
+    componentDidUpdate(prevProps) {
+        console.log(`[SidebarScreen] componentDidUpdate (prev:${prevProps.isFirstTimeNewExpensifyUser})(now:${this.props.isFirstTimeNewExpensifyUser})`);
+        if (!prevProps.isFirstTimeNewExpensifyUser && this.props.isFirstTimeNewExpensifyUser) {
+            console.log('!!!!!TOGGLE GLOBAL CREATE!!!!!')
+            this.toggleCreateMenu();
             NameValuePair.set(CONST.NVP.IS_FIRST_TIME_NEW_EXPENSIFY_USER, false, ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER);
         }
     }
@@ -211,6 +205,7 @@ export default compose(
         },
         isFirstTimeNewExpensifyUser: {
             key: ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER,
+            initWithStoredValues: false, // Ensure we always use the value from the server
         },
         policies: {
             key: ONYXKEYS.COLLECTION.POLICY,
