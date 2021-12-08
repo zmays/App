@@ -278,6 +278,7 @@ export default {
                 label: 'macOS',
             },
         },
+        closeAccount: 'Close account',
         security: 'Security',
         signOut: 'Sign out',
         versionLetter: 'v',
